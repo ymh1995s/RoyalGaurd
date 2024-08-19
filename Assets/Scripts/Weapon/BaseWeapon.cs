@@ -72,6 +72,11 @@ public abstract class BaseWeapon : MonoBehaviour
         float radians = currentAngle * Mathf.Deg2Rad;
         Vector3 offset = new Vector3(Mathf.Cos(radians), Mathf.Sin(radians), 0) * orbitRadius;
 
+        // TODO
+        // SPUM으로 넘어오면서 y오프셋 조정 임시 코드
+        // 플레이어의 Y 축 중심 조정 (필요에 따라 Y 오프셋을 추가)
+        offset.y += 0.5f; // 필요하다면 yOffset을 통해 조정
+
         // 오브젝트의 위치를 플레이어 주위로 설정합니다.
         transform.position = playerPosition + offset;
     }
@@ -88,12 +93,6 @@ public abstract class BaseWeapon : MonoBehaviour
         Collider2D[] colliders = Physics2D.OverlapCircleAll(towerPosition, (detectionRadius* detectionRadiusMul), enemyLayer);
         foreach (Collider2D collider in colliders)
         {
-            Renderer enemyRenderer = collider.GetComponent<Renderer>();
-            if (enemyRenderer == null || !enemyRenderer.enabled)
-            {
-                continue; // 렌더러가 없거나 비활성화된 적을 무시합니다.
-            }
-
             float distanceToEnemy = Vector2.Distance(towerPosition, collider.transform.position);
 
             // 가장 가까운 적 탐지

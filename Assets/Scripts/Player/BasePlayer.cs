@@ -12,6 +12,9 @@ public class BasePlayer : MonoBehaviour, IDamageable
     public Vector2 minBounds; // 최소 경계
     public Vector2 maxBounds; // 최대 경계
 
+    //하위 오브젝트의 애니메이터
+    private Animator animator;
+
     //스텟 영역
     static public float moveSpeed = 2.0f;
     static public int maxHP = 20;
@@ -58,6 +61,9 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
         // 하위 스크립트 로드
         itemcollector = new ItemCollector();
+
+        // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
+        animator = transform.Find("UnitRoot").GetComponent<Animator>();
 
         // 무기 프리펩 로드
         LV1WeaponPrefab = Resources.Load<GameObject>(weaponName[0]); // Instantiate로 생성한 프리팹을 참조
@@ -113,22 +119,29 @@ public class BasePlayer : MonoBehaviour, IDamageable
     private void OnMove(InputValue value)
     {
         input = value.Get<Vector2>();
-
+        animator.Play("1_Run");
         if (input.x < 0)
         {
             // 왼쪽으로 이동할 때 좌우 반전
-            //spriteRenderer.flipX = false;
             Vector3 scale = transform.localScale;
-            scale.x = 1;  // 원하는 값으로 설정
+            scale.x = 1; 
             transform.localScale = scale;
         }
         else if (input.x > 0)
         {
             // 오른쪽으로 이동할 때 좌우 반전 해제
-            //spriteRenderer.flipX = true;
             Vector3 scale = transform.localScale;
-            scale.x = -1;  // 원하는 값으로 설정
+            scale.x = -1; 
             transform.localScale = scale;
+        }
+        // SPUM 애니메이션을 위해 추가
+        else if (input.y != 0)
+        {
+            animator.Play("1_Run");
+        }
+        else
+        {
+            animator.Play("0_idle");
         }
     }
 
@@ -157,7 +170,6 @@ public class BasePlayer : MonoBehaviour, IDamageable
         healthBarForeground.localScale = new Vector3(originalScale.x * healthPercent, originalScale.y, originalScale.z);
     }
 
-    int templevel = 1;
     void CheckLevelUp()
     {
         if (curExp < maxExp) return;
@@ -166,7 +178,6 @@ public class BasePlayer : MonoBehaviour, IDamageable
         curExp = System.Math.Max(0, curExp - maxExp);
         maxExp += 1; //본게임 때 주석 해제
         LevelUp();
-        templevel++;
     }
 
     public void Debug_WeaponAdd()
@@ -231,7 +242,6 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
     void LevelUp()
     {
-        print("levelup 실로직");
         //디버그하려고 try 걸음
         try
         {

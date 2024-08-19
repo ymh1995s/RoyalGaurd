@@ -21,7 +21,6 @@ public class BaseProjectile : MonoBehaviour
     //스텟 영역
     public int attackPower = 1;
     public static int attackPowerUp = 0;
-    private float speed = 5f;  // 투사체 속도
     protected int[] master_attackPower = { 10,15,18 };
 
     // 이펙트 영역

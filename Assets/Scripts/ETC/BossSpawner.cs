@@ -8,7 +8,8 @@ public class BossSpawner : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        StartCoroutine(SpawnObjectAfterDelay(600f));
+        //StartCoroutine(SpawnObjectAfterDelay(600f));
+        StartCoroutine(SpawnObjectAfterDelay(6f));
     }
 
     IEnumerator SpawnObjectAfterDelay(float delay)
