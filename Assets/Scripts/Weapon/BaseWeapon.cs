@@ -25,9 +25,8 @@ public abstract class BaseWeapon : MonoBehaviour
     public static float fireRateMmul = 1.0f;
 
     // 탐지 영역
-    protected float detectionRadius;  // 타워의 탐지 반경
+    static public float detectionRadius;  // 타워의 탐지 반경
     protected float[] detectionRadius_ = { 4f, 5f, 6f };
-    public static float detectionRadiusMul = 1.0f; // 탐지 반경 업그레이드 (곱셈 연산)
     protected LayerMask enemyLayer;           // 적 레이어
     protected Collider2D enemyCollider;       // 적 콜라이더
     [SerializeField] protected Transform target;               // 타게팅된 적
@@ -90,7 +89,7 @@ public abstract class BaseWeapon : MonoBehaviour
 
         Vector2 towerPosition = transform.position;
 
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(towerPosition, (detectionRadius* detectionRadiusMul), enemyLayer);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(towerPosition, (detectionRadius), enemyLayer);
         foreach (Collider2D collider in colliders)
         {
             float distanceToEnemy = Vector2.Distance(towerPosition, collider.transform.position);
@@ -115,6 +114,12 @@ public abstract class BaseWeapon : MonoBehaviour
             if (fireCountdown <= 0f)
             {
                 GameObject bulletGO = Instantiate(bulletPrefab, transform.position, transform.rotation);
+
+                // 총알의 Z축 위치를 조정하여 Grid보다 앞에 배치
+                Vector3 bulletPosition = bulletGO.transform.position;
+                bulletPosition.z = -3; // 필요에 따라 조정
+                bulletGO.transform.position = bulletPosition;
+
                 Rigidbody2D rb = bulletGO.GetComponent<Rigidbody2D>();
 
                 Vector3 direction = (target.position - transform.position).normalized;
@@ -128,6 +133,6 @@ public abstract class BaseWeapon : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, (detectionRadius * detectionRadiusMul));
+        Gizmos.DrawWireSphere(transform.position, (detectionRadius));
     }
 }

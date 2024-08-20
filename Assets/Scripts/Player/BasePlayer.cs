@@ -87,7 +87,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
         // HUD 업데이트
         GameManager.Instance.hudManager.PlayerHUDUpdate(playerLv, curExp, maxExp, currentHP, moveSpeed);
-        GameManager.Instance.hudManager.WeaponHUDUpdate(BaseProjectile.attackPowerUp, BaseWeapon.detectionRadiusMul, BaseWeapon.fireRateMmul);
+        GameManager.Instance.hudManager.WeaponHUDUpdate(BaseProjectile.attackPowerUp, BaseWeapon.detectionRadius, BaseWeapon.fireRateMmul);
         GameManager.Instance.hudManager.TowerHUDUpdate(BaseProjectile.attackPowerUp, BaseTower.detectionRadius, BaseTower.fireRateMmul);
     }
 
@@ -95,10 +95,11 @@ public class BasePlayer : MonoBehaviour, IDamageable
     {
         if (collision.CompareTag("Item"))
         {
+            // 제출용 이지
             if (collision.gameObject.name == "Coin3(Clone)")
                 curExp += 1;
             else if (collision.gameObject.name == "Coin2(Clone)")
-                curExp += 3;
+                curExp += 4;
             else if (collision.gameObject.name == "Coin(Clone)")
                 curExp += 10;
             Destroy(collision.gameObject);
@@ -161,7 +162,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         SceneLoader.SceneLoad_OverScene();
     }
 
-    void UpdateHealthBar()
+    public void UpdateHealthBar()
     {
         // 체력 비율 계산
         float healthPercent = (float)currentHP / maxHP;
@@ -221,8 +222,9 @@ public class BasePlayer : MonoBehaviour, IDamageable
                     int index = UnityEngine.Random.Range(0, 100);
 
                     //TODO 하드코딩 제거
-                    if (index <70) weapon = Instantiate(LV1WeaponPrefab, transform.position, Quaternion.identity);
-                    else if (index < 95) weapon = Instantiate(LV2WeaponPrefab, transform.position, Quaternion.identity);
+                    //제출용 이지 모드
+                    if (index <60) weapon = Instantiate(LV1WeaponPrefab, transform.position, Quaternion.identity);
+                    else if (index < 90) weapon = Instantiate(LV2WeaponPrefab, transform.position, Quaternion.identity);
                     else weapon = Instantiate(LV3WeaponPrefab, transform.position, Quaternion.identity);
 
                     weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정

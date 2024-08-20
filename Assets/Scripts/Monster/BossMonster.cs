@@ -9,8 +9,8 @@ public class BossMonster : BaseMonster
     protected override void Start()
     {
         base.Start();
-
-        animator.speed = 0.5f;
+ 
+        animator.speed = 0.8f;
 
         hp = master_Hp[(int)Level.BOSS];
         speed = 0.5f;

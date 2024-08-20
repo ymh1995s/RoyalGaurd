@@ -4982,9 +4982,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24260cb8e63feaf4cb30efa6c793ce35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitOffset: 0
-  UseFirePointRotation: 0
-  rotationOffset: {x: 0, y: 0, z: 0}
-  hit: {fileID: 0}
-  flash: {fileID: 0}
+  attackPower: 1
   Detached: []

@@ -27,7 +27,8 @@ public class BaseMonster : MonoBehaviour
     public int attackPower = 1;
     private float attackInterval = 1.0f;
     private float lastAttackTime = 0.0f;
-    protected int[] master_Hp = new int[6] { 10, 100, 200, 280, 360, 30000 };
+    //protected int[] master_Hp = new int[6] { 10, 100, 200, 280, 360, 30000 };
+    protected int[] master_Hp = new int[6] { 10, 70, 140, 200, 250, 15000 }; //제출용 이지 버전 70% 마지노
 
     //오디오 영역
     public AudioClip[] deathSound = new AudioClip[5]; // 사망 사운드 종류
@@ -233,9 +234,9 @@ public class BaseMonster : MonoBehaviour
         string coin;
 
         //TODO? 하드코딩 제거?
-        //if (index < 5) coin = "Coin/Coin";
-        if (index < 5) coin = "Coin/Coin";
-        else if (index < 30) coin = "Coin/Coin2";
+        //제출용 이지 모드
+        if (index < 7) coin = "Coin/Coin";
+        else if (index < 40) coin = "Coin/Coin2";
         else coin = "Coin/Coin3";
 
         // Resources 폴더에서 아이템 프리팹을 로드

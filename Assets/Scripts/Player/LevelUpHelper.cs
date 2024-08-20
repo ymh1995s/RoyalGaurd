@@ -21,7 +21,7 @@ public static class LevelUpHelper
 
     static public void WeaponRangedUp()
     {
-        BaseWeapon.detectionRadiusMul += 0.15f;
+        BaseWeapon.detectionRadius += 0.15f;
         GameManager.Instance.hudManager.LevelUpHintUpdate("무기 사거리 증가!");
     }
 
@@ -55,6 +55,7 @@ public static class LevelUpHelper
         BasePlayer.maxHP += 1;
         BasePlayer.currentHP += BasePlayer.maxHP;
         GameManager.Instance.hudManager.LevelUpHintUpdate("플레이어 체력 증가!");
+        GameManager.Instance.player.UpdateHealthBar();
     }
 
     static public void PlayerSpeedUp()

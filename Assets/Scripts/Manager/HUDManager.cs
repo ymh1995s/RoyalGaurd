@@ -79,7 +79,7 @@ public class HUDManager : MonoBehaviour
     { 
         lv+=1; //배열 관리상 +1
         lvText.text = $"LV {lv} EXP {curExp}/{maxExp}";
-        playerSpecText.text = $"체력 / 이동속도 : {currentHP}/{moveSpeed}";
+        playerSpecText.text = $"체력/이동속도 : {currentHP}/{moveSpeed}";
         UpdateExperienceBar(curExp, maxExp);
     }
 
@@ -88,7 +88,7 @@ public class HUDManager : MonoBehaviour
         // attackRange를 소수점 두 자리까지 포맷팅
         string formattedAttackSpeed = attackSpeed.ToString("F2");
 
-        WeaponSpecText.text = $"무기 AP/AR/AS : +{attackPower} / +{attackRange} / x{formattedAttackSpeed}";
+        WeaponSpecText.text = $"무기 AP/AS/R : +{attackPower} / x{formattedAttackSpeed} / +{attackRange}";
     }
 
     public void TowerHUDUpdate(int attackPower, float attackRange, float attackSpeed)
@@ -96,7 +96,7 @@ public class HUDManager : MonoBehaviour
         // attackRange를 소수점 두 자리까지 포맷팅
         string formattedAttackSpeed = attackSpeed.ToString("F2");
 
-        TowerSpecText.text = $"타워 /AP/AR/AS : +{attackPower} / +{attackRange} / x{formattedAttackSpeed}";
+        TowerSpecText.text = $"타워 AP/AS/R : +{attackPower} / x{formattedAttackSpeed} / +{attackRange}";
     }
 
 

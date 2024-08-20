@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale += 0.5f; //제출용 스겜 (1.5배속)
     }
 
     void Update()

@@ -14,9 +14,12 @@ public class BaseTower : MonoBehaviour, IDamageable
     private float fireRate = 1f; // 발사 간격을 초 단위로 설정 (X초에 한 번 발사)
     public static float fireRateMmul = 1.0f; // 공격 속도 업그레이드 곱셈 적용
     public static float detectionRadius = 10f;  // 타워의 탐지 반경
+    public static float detectionRadiusMul = 1.0f;  // 타워의 탐지 반경
     private float fireCountdown = 0f;// 발사 간격을 체크하기 위한 카운트다운 변수
-
     bool isAlive = true;
+
+    // 컴포넌트 영역
+    BoxCollider2D collider;
 
     //하위 오브젝트의 애니메이터
     private Animator unitAnimator;
@@ -37,6 +40,8 @@ public class BaseTower : MonoBehaviour, IDamageable
     {
         // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
         unitAnimator = transform.Find("UnitRoot").GetComponent<Animator>();
+
+        collider = transform.GetComponent<BoxCollider2D>();
 
         //적 레이어 설정
         enemyLayer = 1 << LayerMask.NameToLayer("Enemy");
@@ -75,6 +80,7 @@ public class BaseTower : MonoBehaviour, IDamageable
         gameObject.layer = 0;
         gameObject.tag = "Untagged";
         unitAnimator.SetTrigger("Death");
+        Destroy(collider);
         isAlive = false;
     }
 
@@ -149,7 +155,7 @@ public class BaseTower : MonoBehaviour, IDamageable
 
         // 총알의 Z축 위치를 조정하여 Grid보다 앞에 배치
         Vector3 bulletPosition = bulletGO.transform.position;
-        bulletPosition.z = -1; // 필요에 따라 조정
+        bulletPosition.z = -3; // 필요에 따라 조정
         bulletGO.transform.position = bulletPosition;
 
         // 목표 방향 계산
