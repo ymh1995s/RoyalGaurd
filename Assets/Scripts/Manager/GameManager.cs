@@ -61,7 +61,6 @@ public class GameManager : MonoBehaviour
         if (hudManager != null)
         {
             // HUDManager의 버튼 초기화 메서드 호출
-            Debug.Log("hudManager를 찾았습니다.버튼 (재)설정");
             hudManager.InitializeButtons();
         }
         else

@@ -24,7 +24,7 @@ public class BaseMonster : MonoBehaviour
     private float attackInterval = 1.0f;
     private float lastAttackTime = 0.0f;
     //protected int[] master_Hp = new int[6] { 10, 100, 200, 280, 360, 30000 };
-    protected int[] master_Hp = new int[6] { 10, 70, 140, 200, 250, 150 }; //제출용 이지 버전 70% 마지노
+    protected int[] master_Hp = new int[6] { 10, 70, 140, 200, 250, 20000 }; //제출용 이지 버전 70% 마지노
 
     //오디오 영역
     public AudioClip[] deathSound = new AudioClip[5]; // 사망 사운드 종류

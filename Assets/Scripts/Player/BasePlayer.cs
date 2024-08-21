@@ -121,6 +121,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
     private void OnMove(InputValue value)
     {
+        //TODO : 애니메이터 버그(움직였는데 Idle 모션) 픽스해야됨
         input = value.Get<Vector2>();
         animator.Play("1_Run");
         if (input.x < 0)

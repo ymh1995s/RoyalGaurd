@@ -123,7 +123,9 @@ public abstract class BaseWeapon : MonoBehaviour
 
                 Rigidbody2D rb = bulletGO.GetComponent<Rigidbody2D>();
 
-                Vector3 direction = (target.position - transform.position).normalized;
+                // 방향을 계산할 때 Y축에 약간의 상향 오프셋 추가
+                Vector3 offset = new Vector3(0, 0.5f, 0); // Y축으로 0.1만큼 오프셋, 필요에 따라 조정
+                Vector3 direction = ((target.position + offset) - transform.position).normalized;
                 rb.velocity = direction * bulletSpeed;
 
                 fireCountdown = (fireRate * fireRateMmul);

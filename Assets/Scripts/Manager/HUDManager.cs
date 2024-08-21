@@ -34,11 +34,11 @@ public class HUDManager : MonoBehaviour
     private Coroutine fadeOutCoroutine; // 현재 실행 중인 페이드 아웃 코루틴을 추적
 
     // 참조용 스트링 Arr
-    protected string[] specTextDir = { "EXP/LVText", "MENU/UI/StatGroup/PlayerSpec", "MENU/UI/StatGroup/WeaponSpec", "MENU/UI/StatGroup/TowerSpec" };
-    protected string levelUpHintDir = "LevelUPText";
-    protected string[] debugBtnDir = { "MENU/DebugBTN/겜속도--", "MENU/DebugBTN/겜속도++", "MENU/마스터웨폰+", "MENU/마스터공업", "MENU/무기공속업", "MENU/무기레인지업", "MENU/타워공속업",
+    private string[] specTextDir = { "EXP/LVText", "MENU/UI/StatGroup/PlayerSpec", "MENU/UI/StatGroup/WeaponSpec", "MENU/UI/StatGroup/TowerSpec" };
+    private string levelUpHintDir = "LevelUPText";
+    private string[] debugBtnDir = { "MENU/DebugBTN/겜속도--", "MENU/DebugBTN/겜속도++", "MENU/마스터웨폰+", "MENU/마스터공업", "MENU/무기공속업", "MENU/무기레인지업", "MENU/타워공속업",
         "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트"};
-    protected string[] expDir = {"EXP/BaseBar", "EXP/BaseBar/RealBar" };//나중에 변수명 지어주기
+    private string[] expDir = {"EXP/BaseBar", "EXP/BaseBar/RealBar" };//나중에 변수명 지어주기
 
     private void Awake()
     {
