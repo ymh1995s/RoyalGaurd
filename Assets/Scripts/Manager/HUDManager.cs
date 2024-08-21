@@ -1,8 +1,7 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
-using UnityEngine.UIElements;
-using static Cinemachine.DocumentationSortingAttribute;
 
 public class HUDManager : MonoBehaviour
 {
@@ -13,29 +12,50 @@ public class HUDManager : MonoBehaviour
     private Text TowerSpecText;
     private Text levelupHintText;
 
+    // 버튼 컴포넌트
+    public Button debugGsmeSpeedMinusButton;
+    public Button debugGsmeSpeedButton;
+    public Button debugWeaponAddButton;
+    public Button debugAttackPowerUpButton;
+    public Button debugWeaponAttackSpeedUpButton;
+    public Button debugWeaponRangeUpButton;
+    public Button debugTowerAttackSpeedUpButton;
+    public Button debugTowerRangeUpButton;
+    public Button debugPlayerHPUpButton;
+    public Button debugPlayerSpeedUpButton;
+
     // 레밸업 게이지 효과
-    public RectTransform backgroundPanel; // 게이지 바 배경
-    public RectTransform experienceBar; // 게이지 바
+    private RectTransform backgroundPanel; // 게이지 바 배경
+    private RectTransform experienceBar; // 게이지 바
 
     //레밸업 텍스트효과 (나타났다 사라지기)
-    public float fadeDuration = 2f; // 텍스트가 서서히 사라지는 시간
-    public float displayDuration = 2f; // 텍스트가 표시되는 시간
+    private float fadeDuration = 2f; // 텍스트가 서서히 사라지는 시간
+    private float displayDuration = 2f; // 텍스트가 표시되는 시간
     private Coroutine fadeOutCoroutine; // 현재 실행 중인 페이드 아웃 코루틴을 추적
 
     // 참조용 스트링 Arr
     protected string[] specTextDir = { "EXP/LVText", "MENU/UI/StatGroup/PlayerSpec", "MENU/UI/StatGroup/WeaponSpec", "MENU/UI/StatGroup/TowerSpec" };
     protected string levelUpHintDir = "LevelUPText";
-    protected string[] temp = {"EXP/BaseBar", "EXP/BaseBar/RealBar" };//나중에 변수명 지어주기
+    protected string[] debugBtnDir = { "MENU/DebugBTN/겜속도--", "MENU/DebugBTN/겜속도++", "MENU/마스터웨폰+", "MENU/마스터공업", "MENU/무기공속업", "MENU/무기레인지업", "MENU/타워공속업",
+        "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트"};
+    protected string[] expDir = {"EXP/BaseBar", "EXP/BaseBar/RealBar" };//나중에 변수명 지어주기
 
     private void Awake()
     {
         TextObjectSet();
+        InitializeButtons(); // 버튼 초기화
     }
-    void TextObjectSet()
+
+    private void Start()
+    {
+        InitializeButtons(); // 버튼 초기화??이건가?
+    }
+
+    private void TextObjectSet()
     {
         // 경험지 영역
-        backgroundPanel = FindChild<RectTransform>(transform, temp[0]);
-        experienceBar = FindChild<RectTransform>(transform, temp[1]);
+        backgroundPanel = FindChild<RectTransform>(transform, expDir[0]);
+        experienceBar = FindChild<RectTransform>(transform, expDir[1]);
 
         //스텟 영역
         lvText = FindChild<Text>(transform, specTextDir[0]);
@@ -45,18 +65,143 @@ public class HUDManager : MonoBehaviour
         levelupHintText = FindChild<Text>(transform, levelUpHintDir);
     }
 
+    public void InitializeButtons()
+    {
+        debugGsmeSpeedMinusButton = FindChild<Button>(transform, debugBtnDir[0]);
+        debugGsmeSpeedButton = FindChild<Button>(transform, debugBtnDir[1]);
+        debugWeaponAddButton = FindChild<Button>(transform, debugBtnDir[2]);
+        debugAttackPowerUpButton = FindChild<Button>(transform, debugBtnDir[3]);
+        debugWeaponAttackSpeedUpButton = FindChild<Button>(transform, debugBtnDir[4]);
+        debugWeaponRangeUpButton = FindChild<Button>(transform, debugBtnDir[5]);
+        debugTowerAttackSpeedUpButton = FindChild<Button>(transform, debugBtnDir[6]);
+        debugTowerRangeUpButton = FindChild<Button>(transform, debugBtnDir[7]);
+        debugPlayerHPUpButton = FindChild<Button>(transform, debugBtnDir[8]);
+        debugPlayerSpeedUpButton = FindChild<Button>(transform, debugBtnDir[9]);
+
+        // 버튼 초기화
+        if (debugGsmeSpeedMinusButton != null)
+        {
+            debugGsmeSpeedMinusButton.onClick.RemoveAllListeners();
+            debugGsmeSpeedMinusButton.onClick.AddListener(() => GameManager.Instance.DebugBtnTimeMinus());
+        }
+        else
+        {
+            Debug.LogError("debugGsmeSpeedMinusButton이 할당되지 않았습니다.");
+        }
+
+        if (debugGsmeSpeedButton != null)
+        {
+            debugGsmeSpeedButton.onClick.RemoveAllListeners();
+            debugGsmeSpeedButton.onClick.AddListener(() => GameManager.Instance.DebugBtnTimePlus());
+        }
+        else
+        {
+            Debug.LogError("debugGsmeSpeedButton이 할당되지 않았습니다.");
+        }
+
+        if (debugWeaponAddButton != null)
+        {
+            debugWeaponAddButton.onClick.RemoveAllListeners();
+            debugWeaponAddButton.onClick.AddListener(() => GameManager.Instance.DebugWeaponMaster());
+        }
+        else
+        {
+            Debug.LogError("debugWeaponAddButton이 할당되지 않았습니다.");
+        }
+
+        if (debugAttackPowerUpButton != null)
+        {
+            debugAttackPowerUpButton.onClick.RemoveAllListeners();
+            debugAttackPowerUpButton.onClick.AddListener(() => GameManager.Instance.DebugWeaponAtaackPowerUp());
+        }
+        else
+        {
+            Debug.LogError("debugAttackPowerUpButton이 할당되지 않았습니다.");
+        }
+
+        if (debugWeaponAttackSpeedUpButton != null)
+        {
+            debugWeaponAttackSpeedUpButton.onClick.RemoveAllListeners();
+            debugWeaponAttackSpeedUpButton.onClick.AddListener(() => GameManager.Instance.DebugWeaponAtaackSpeedUp());
+        }
+        else
+        {
+            Debug.LogError("debugWeaponAttackSpeedUpButton이 할당되지 않았습니다.");
+        }
+
+        if (debugWeaponRangeUpButton != null)
+        {
+            debugWeaponRangeUpButton.onClick.RemoveAllListeners();
+            debugWeaponRangeUpButton.onClick.AddListener(() => GameManager.Instance.DebugWeaponRangeUp());
+        }
+        else
+        {
+            Debug.LogError("debugWeaponRangeUpButton이 할당되지 않았습니다.");
+        }
+
+        if (debugTowerAttackSpeedUpButton != null)
+        {
+            debugTowerAttackSpeedUpButton.onClick.RemoveAllListeners();
+            debugTowerAttackSpeedUpButton.onClick.AddListener(() => GameManager.Instance.DebugTowerAtaackSpeedUp());
+        }
+        else
+        {
+            Debug.LogError("debugTowerAttackSpeedUpButton이 할당되지 않았습니다.");
+        }
+
+        if (debugTowerRangeUpButton != null)
+        {
+            debugTowerRangeUpButton.onClick.RemoveAllListeners();
+            debugTowerRangeUpButton.onClick.AddListener(() => GameManager.Instance.DebugTowerRangeUp());
+        }
+        else
+        {
+            Debug.LogError("debugTowerRangeUpButton이 할당되지 않았습니다.");
+        }
+
+        if (debugPlayerHPUpButton != null)
+        {
+            debugPlayerHPUpButton.onClick.RemoveAllListeners();
+            debugPlayerHPUpButton.onClick.AddListener(() => GameManager.Instance.DebugPlayerHPUp());
+        }
+        else
+        {
+            Debug.LogError("debugPlayerHPUpButton이 할당되지 않았습니다.");
+        }
+
+        if (debugPlayerSpeedUpButton != null)
+        {
+            debugPlayerSpeedUpButton.onClick.RemoveAllListeners();
+            debugPlayerSpeedUpButton.onClick.AddListener(() => GameManager.Instance.DebugPlayerSpeedUp());
+        }
+        else
+        {
+            Debug.LogError("debugPlayerSpeedUpButton이 할당되지 않았습니다.");
+        }
+    }
+
     // 재귀적 찾기 유틸리티 함수
     T FindChild<T>(Transform parent, string path) where T : Component
     {
         Transform child = parent.Find(path);
         if (child != null)
         {
-            return child.GetComponent<T>();
+            T component = child.GetComponent<T>();
+            if (component != null)
+            {
+                return component;
+            }
+            else
+            {
+                Debug.LogWarning($"경고: '{path}' 경로에서 '{typeof(T)}' 컴포넌트를 찾을 수 없습니다.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"경고: '{path}' 경로에서 자식 오브젝트를 찾을 수 없습니다.");
         }
         return null;
     }
-
-
 
     // 현재 경험치와 최대 경험치를 사용해 게이지 바를 업데이트하는 함수
     public void UpdateExperienceBar(float currentExperience, float maxExperience)

@@ -42,8 +42,6 @@ public class BossMonster : BaseMonster
         // 체력 비율 계산
         float healthPercent = (float)hp / master_Hp[(int)Level.BOSS];
 
-        print(healthPercent);
-
         // 체력바의 스케일 조정
         healthBarForeground.localScale = new Vector3(originalScale.x * healthPercent, originalScale.y, originalScale.z);
     }

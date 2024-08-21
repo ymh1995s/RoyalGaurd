@@ -3,7 +3,7 @@ using UnityEngine;
 public class BaseCommandCenter : MonoBehaviour, IDamageable
 {
     //스텟 영역
-    static public int maxHP = 30;
+    public int maxHP = 30;
     [SerializeField] private int currentHp;
 
     //체력바 영역

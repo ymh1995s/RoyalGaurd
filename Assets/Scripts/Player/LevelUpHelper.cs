@@ -21,7 +21,7 @@ public static class LevelUpHelper
 
     static public void WeaponRangedUp()
     {
-        BaseWeapon.detectionRadius += 0.15f;
+        BaseWeapon.detectionRadiusPlus += 0.15f;
         GameManager.Instance.hudManager.LevelUpHintUpdate("무기 사거리 증가!");
     }
 
@@ -40,7 +40,7 @@ public static class LevelUpHelper
 
     static public void TowerRangeUp()
     {
-        BaseTower.detectionRadius += 0.2f;
+        BaseTower.detectionRadiusPlus += 0.2f;
         GameManager.Instance.hudManager.LevelUpHintUpdate("타워 사거리 증가!");
     }
 

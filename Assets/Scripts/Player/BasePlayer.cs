@@ -18,7 +18,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
     //스텟 영역
     static public float moveSpeed = 2.0f;
     static public int maxHP = 20;
-    static public int currentHP;
+    static public int currentHP = 20;
 
     //무기 관리
     const int maxWeaponCount = 100;
@@ -47,6 +47,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
     
     //하위 스크립트
     ItemCollector itemcollector;
+    Gatcha gatcha;
 
     // 참조용 스트링 Arr
     string[] weaponName = new string[3] { "Weapon/유튜브쟁이", "Weapon/치지직갈걸", "Weapon/숲에남을걸" };
@@ -61,6 +62,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
         // 하위 스크립트 로드
         itemcollector = new ItemCollector();
+        gatcha = new Gatcha();
 
         // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
         animator = transform.Find("UnitRoot").GetComponent<Animator>();
@@ -87,8 +89,8 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
         // HUD 업데이트
         GameManager.Instance.hudManager.PlayerHUDUpdate(playerLv, curExp, maxExp, currentHP, moveSpeed);
-        GameManager.Instance.hudManager.WeaponHUDUpdate(BaseProjectile.attackPowerUp, BaseWeapon.detectionRadius, BaseWeapon.fireRateMmul);
-        GameManager.Instance.hudManager.TowerHUDUpdate(BaseProjectile.attackPowerUp, BaseTower.detectionRadius, BaseTower.fireRateMmul);
+        GameManager.Instance.hudManager.WeaponHUDUpdate(BaseProjectile.attackPowerUp, BaseWeapon.detectionRadiusPlus, BaseWeapon.fireRateMmul);
+        GameManager.Instance.hudManager.TowerHUDUpdate(BaseProjectile.attackPowerUp, BaseTower.detectionRadiusPlus, BaseTower.fireRateMmul);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -247,11 +249,11 @@ public class BasePlayer : MonoBehaviour, IDamageable
         //디버그하려고 try 걸음
         try
         {
-            int index = Gatcha.levelUpGatcha[playerLv++];
+            int index = gatcha.levelUpGatcha[playerLv++];
 
             if (index == 0)
             {
-                int _weaponIndex = Gatcha.weaponGatcha[gatcha_weaponIndex++];
+                int _weaponIndex = gatcha.weaponGatcha[gatcha_weaponIndex++];
 
                 if (_weaponIndex == 0) WeaponAdd();
                 else if (_weaponIndex == 1) LevelUpHelper.WeaponAttackSpeedUp();
@@ -260,12 +262,12 @@ public class BasePlayer : MonoBehaviour, IDamageable
             }
             else if (index == 1)
             {
-                int _towerIndex = Gatcha.towerGatcha[gatcha_towerIndex++];
+                int _towerIndex = gatcha.towerGatcha[gatcha_towerIndex++];
                 LevelUpHelper.TowerUpgrade(_towerIndex);
             }
             else if (index == 2)
             {
-                int _playerIndex = Gatcha.playerGatcha[gatcha_playerIndex++];
+                int _playerIndex = gatcha.playerGatcha[gatcha_playerIndex++];
                 LevelUpHelper.PlayerUpgrade(_playerIndex);
                 UpdateHealthBar(); //체력 업그레이드 시 업그레이드 된 체력 반영
             }

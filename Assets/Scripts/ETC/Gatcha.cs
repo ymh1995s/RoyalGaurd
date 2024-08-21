@@ -1,13 +1,18 @@
 using UnityEngine;
 
-public static class Gatcha
+public class Gatcha
 {
-    static public int[] levelUpGatcha = new int[100]; //MAX LEVEL 100
-    static public int[] weaponGatcha = new int[1000];
-    static public int[] towerGatcha = new int[1000];
-    static public int[] playerGatcha = new int[1000];
+    public int[] levelUpGatcha = new int[100]; //MAX LEVEL 100
+    public int[] weaponGatcha = new int[1000];
+    public int[] towerGatcha = new int[1000];
+    public int[] playerGatcha = new int[1000];
 
-    static public void GameStart()
+    public Gatcha()
+    {
+        GameStart();
+    }
+
+    public void GameStart()
     {
         //50%
         // 궤도 무기 증가
@@ -45,7 +50,7 @@ public static class Gatcha
         ShuffleAll(); //배열에 랜덤 요쇼가 오도록 섞음
     }
 
-    static public void Shuffle(int[] array)
+    public void Shuffle(int[] array)
     {
         for (int i = array.Length - 1; i > 0; i--)
         {
@@ -56,7 +61,7 @@ public static class Gatcha
         }
     }
 
-    static public void Shuffle(GameObject[] array)
+    public void Shuffle(GameObject[] array)
     {
         for (int i = array.Length - 1; i > 0; i--)
         {
@@ -67,7 +72,7 @@ public static class Gatcha
         }
     }
 
-    static void ShuffleAll()
+    void ShuffleAll()
     {        
         Shuffle(levelUpGatcha);
         Shuffle(weaponGatcha);
@@ -75,7 +80,7 @@ public static class Gatcha
         Shuffle(playerGatcha);
     }
 
-    static void AddNumbersToArray(int number, int count, int[] TargetArr)
+    void AddNumbersToArray(int number, int count, int[] TargetArr)
     {
         int currentIndex = 0;
         // 배열의 빈 공간에 숫자를 추가

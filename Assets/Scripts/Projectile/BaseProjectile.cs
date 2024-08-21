@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.Recorder.OutputPath;
 
 // HIT & FLASH
 // 투사체 고르기

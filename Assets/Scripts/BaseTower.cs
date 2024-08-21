@@ -14,7 +14,7 @@ public class BaseTower : MonoBehaviour, IDamageable
     private float fireRate = 1f; // 발사 간격을 초 단위로 설정 (X초에 한 번 발사)
     public static float fireRateMmul = 1.0f; // 공격 속도 업그레이드 곱셈 적용
     public static float detectionRadius = 10f;  // 타워의 탐지 반경
-    public static float detectionRadiusMul = 1.0f;  // 타워의 탐지 반경
+    public static float detectionRadiusPlus = 0f;  // 타워의 투가 탐지 반경
     private float fireCountdown = 0f;// 발사 간격을 체크하기 위한 카운트다운 변수
     bool isAlive = true;
 
@@ -104,7 +104,7 @@ public class BaseTower : MonoBehaviour, IDamageable
         Vector2 towerPosition = transform.position;
 
         // 탐지 범위 내의 모든 Collider 검사
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(towerPosition, detectionRadius, enemyLayer);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(towerPosition, detectionRadius+ detectionRadiusPlus, enemyLayer);
         foreach (Collider2D collider in colliders)
         {
             // 타워와 적 사이의 거리 계산
@@ -181,6 +181,6 @@ public class BaseTower : MonoBehaviour, IDamageable
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+        Gizmos.DrawWireSphere(transform.position, detectionRadius+ detectionRadiusPlus);
     }
 }

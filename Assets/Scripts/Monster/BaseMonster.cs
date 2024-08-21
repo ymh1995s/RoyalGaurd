@@ -1,9 +1,5 @@
 using System.Collections;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.Progress;
 
 public class BaseMonster : MonoBehaviour
 {
@@ -28,7 +24,7 @@ public class BaseMonster : MonoBehaviour
     private float attackInterval = 1.0f;
     private float lastAttackTime = 0.0f;
     //protected int[] master_Hp = new int[6] { 10, 100, 200, 280, 360, 30000 };
-    protected int[] master_Hp = new int[6] { 10, 70, 140, 200, 250, 15000 }; //제출용 이지 버전 70% 마지노
+    protected int[] master_Hp = new int[6] { 10, 70, 140, 200, 250, 150 }; //제출용 이지 버전 70% 마지노
 
     //오디오 영역
     public AudioClip[] deathSound = new AudioClip[5]; // 사망 사운드 종류
@@ -80,6 +76,8 @@ public class BaseMonster : MonoBehaviour
             animator.SetTrigger("Run");
         }
 
+        monsterCollider = GetComponent<CircleCollider2D>();
+
         // 나머지 설정
         SetAudio();
         SetSearch();
@@ -98,7 +96,6 @@ public class BaseMonster : MonoBehaviour
     {
         playerTransform = GameObject.FindWithTag("Player").transform;
         audioSource = gameObject.AddComponent<AudioSource>();
-        monsterCollider = GetComponent<CircleCollider2D>();
         audioSource.spatialBlend = 1.0f; // 3D 사운드 설정
         audioSource.minDistance = 1.0f; // n일 때 소리 최소, 그 이하 소리 없음
         audioSource.maxDistance = 5.0f; // n일 때 소리 최대, 그 이상 소리 최대
