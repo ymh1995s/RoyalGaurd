@@ -90,7 +90,7 @@ public abstract class BaseWeapon : MonoBehaviour
 
         Vector2 towerPosition = transform.position;
 
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(towerPosition, (detectionRadius), enemyLayer);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(towerPosition, (detectionRadius + detectionRadiusPlus), enemyLayer);
         foreach (Collider2D collider in colliders)
         {
             float distanceToEnemy = Vector2.Distance(towerPosition, collider.transform.position);
@@ -136,6 +136,6 @@ public abstract class BaseWeapon : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, (detectionRadius));
+        Gizmos.DrawWireSphere(transform.position, (detectionRadius + detectionRadiusPlus));
     }
 }

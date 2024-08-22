@@ -1,10 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
 
 public class HUDManager : MonoBehaviour
 {
+    // TODO : 컴포넌트 배열 등으로 그룹 관리하기
+    // TODO : 디버그 그룹하고 스크립트 분리해야 할 듯
+    // TODO : 더해서 여기는 너무 막해서 코드 정리 필요
+
     //스텟 영역
     private Text lvText;
     private Text playerSpecText;
@@ -12,7 +17,23 @@ public class HUDManager : MonoBehaviour
     private Text TowerSpecText;
     private Text levelupHintText;
 
-    // 버튼 컴포넌트
+    // 보너스 레밸업 버튼 컴포넌트
+    public GameObject BonusLevelUpButtonGroup;
+    public Button[] BonusLevelUpButtonArr;
+    // TODO 숫자 하드 코딩 말고 네이밍으로 바꿔야됨
+    // 아닌가 나중에 다른 능력으로 바꿀거라 임시로는 괜찮은가
+    public Button BunusLevelUpButton1;
+    public Button BunusLevelUpButton2;
+    public Button BunusLevelUpButton3;
+    public Button BunusLevelUpButton4;
+    public Button BunusLevelUpButton5;
+    public Button BunusLevelUpButton6;
+
+    // 보너스 레밸업 관려 전역 변수
+    float tempTimeScale = 0f;
+
+    // 디버그 버튼 컴포넌트
+    public Button[] debugButtonArr;
     public Button debugGsmeSpeedMinusButton;
     public Button debugGsmeSpeedButton;
     public Button debugWeaponAddButton;
@@ -36,19 +57,26 @@ public class HUDManager : MonoBehaviour
     // 참조용 스트링 Arr
     private string[] specTextDir = { "EXP/LVText", "MENU/UI/StatGroup/PlayerSpec", "MENU/UI/StatGroup/WeaponSpec", "MENU/UI/StatGroup/TowerSpec" };
     private string levelUpHintDir = "LevelUPText";
+    private string bonusLevelupMsterDir = "LevelUpBonus";
+    private string[] bonusLevelupDir = { "LevelUpBonus/PowerUp", "LevelUpBonus/AttackSpeedUp", "LevelUpBonus/RangeUp", "LevelUpBonus/HPRecover", "LevelUpBonus/SpeedUp", "LevelUpBonus/TODO" };
     private string[] debugBtnDir = { "MENU/DebugBTN/겜속도--", "MENU/DebugBTN/겜속도++", "MENU/마스터웨폰+", "MENU/마스터공업", "MENU/무기공속업", "MENU/무기레인지업", "MENU/타워공속업",
         "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트"};
-    private string[] expDir = {"EXP/BaseBar", "EXP/BaseBar/RealBar" };//나중에 변수명 지어주기
+    private string[] expDir = { "EXP/BaseBar", "EXP/BaseBar/RealBar" };//나중에 변수명 지어주기
 
     private void Awake()
     {
         TextObjectSet();
-        InitializeButtons(); // 버튼 초기화
     }
 
     private void Start()
     {
-        InitializeButtons(); // 버튼 초기화??이건가?
+        InitializeButtons(); // 버튼 초기화
+    }
+
+    public void InitializeButtons()
+    {
+        DebugButtonInit();
+        BonusButtonInit();
     }
 
     private void TextObjectSet()
@@ -63,122 +91,68 @@ public class HUDManager : MonoBehaviour
         WeaponSpecText = FindChild<Text>(transform, specTextDir[2]);
         TowerSpecText = FindChild<Text>(transform, specTextDir[3]);
         levelupHintText = FindChild<Text>(transform, levelUpHintDir);
+
+        //나중에 옮기기
+        // GameObject를 찾기 위해 Transform.Find를 사용합니다
+        Transform bonusLevelUpTransform = transform.Find(bonusLevelupMsterDir);
+        if (bonusLevelUpTransform != null)
+        {
+            BonusLevelUpButtonGroup = bonusLevelUpTransform.gameObject;
+        }
+        else
+        {
+            Debug.LogError("Canvas/LevelUpBonus 오브젝트를 찾을 수 없습니다.");
+        }
     }
 
-    public void InitializeButtons()
+    public void BonusLevelUp()
     {
-        debugGsmeSpeedMinusButton = FindChild<Button>(transform, debugBtnDir[0]);
-        debugGsmeSpeedButton = FindChild<Button>(transform, debugBtnDir[1]);
-        debugWeaponAddButton = FindChild<Button>(transform, debugBtnDir[2]);
-        debugAttackPowerUpButton = FindChild<Button>(transform, debugBtnDir[3]);
-        debugWeaponAttackSpeedUpButton = FindChild<Button>(transform, debugBtnDir[4]);
-        debugWeaponRangeUpButton = FindChild<Button>(transform, debugBtnDir[5]);
-        debugTowerAttackSpeedUpButton = FindChild<Button>(transform, debugBtnDir[6]);
-        debugTowerRangeUpButton = FindChild<Button>(transform, debugBtnDir[7]);
-        debugPlayerHPUpButton = FindChild<Button>(transform, debugBtnDir[8]);
-        debugPlayerSpeedUpButton = FindChild<Button>(transform, debugBtnDir[9]);
+        // 0. 게임 스탑
+        tempTimeScale = Time.timeScale;
+        Time.timeScale = 0;
 
-        // 버튼 초기화
-        if (debugGsmeSpeedMinusButton != null)
+        // 1. 버튼 이미지를 보이게한다.
+        BonusLevelUpButtonGroup.SetActive(true);
+
+        // 2. 하위 버튼을 모두 가림
+        for(int i = 0; i< BonusLevelUpButtonArr.Length;i++)
         {
-            debugGsmeSpeedMinusButton.onClick.RemoveAllListeners();
-            debugGsmeSpeedMinusButton.onClick.AddListener(() => GameManager.Instance.DebugBtnTimeMinus());
-        }
-        else
-        {
-            Debug.LogError("debugGsmeSpeedMinusButton이 할당되지 않았습니다.");
+            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
         }
 
-        if (debugGsmeSpeedButton != null)
+        // 3. 랜덤한 X(temp : 2)개는 선택 및 보이게
+        Vector2Int pair = GetRandomPair();
+        
+        for(int i=0; i< BonusLevelUpButtonArr.Length; i++)
         {
-            debugGsmeSpeedButton.onClick.RemoveAllListeners();
-            debugGsmeSpeedButton.onClick.AddListener(() => GameManager.Instance.DebugBtnTimePlus());
-        }
-        else
-        {
-            Debug.LogError("debugGsmeSpeedButton이 할당되지 않았습니다.");
-        }
-
-        if (debugWeaponAddButton != null)
-        {
-            debugWeaponAddButton.onClick.RemoveAllListeners();
-            debugWeaponAddButton.onClick.AddListener(() => GameManager.Instance.DebugWeaponMaster());
-        }
-        else
-        {
-            Debug.LogError("debugWeaponAddButton이 할당되지 않았습니다.");
+            if( i == pair.x || i==pair.y)
+            {
+                BonusLevelUpButtonArr[i].gameObject.SetActive(true);
+            }
         }
 
-        if (debugAttackPowerUpButton != null)
-        {
-            debugAttackPowerUpButton.onClick.RemoveAllListeners();
-            debugAttackPowerUpButton.onClick.AddListener(() => GameManager.Instance.DebugWeaponAtaackPowerUp());
-        }
-        else
-        {
-            Debug.LogError("debugAttackPowerUpButton이 할당되지 않았습니다.");
-        }
-
-        if (debugWeaponAttackSpeedUpButton != null)
-        {
-            debugWeaponAttackSpeedUpButton.onClick.RemoveAllListeners();
-            debugWeaponAttackSpeedUpButton.onClick.AddListener(() => GameManager.Instance.DebugWeaponAtaackSpeedUp());
-        }
-        else
-        {
-            Debug.LogError("debugWeaponAttackSpeedUpButton이 할당되지 않았습니다.");
-        }
-
-        if (debugWeaponRangeUpButton != null)
-        {
-            debugWeaponRangeUpButton.onClick.RemoveAllListeners();
-            debugWeaponRangeUpButton.onClick.AddListener(() => GameManager.Instance.DebugWeaponRangeUp());
-        }
-        else
-        {
-            Debug.LogError("debugWeaponRangeUpButton이 할당되지 않았습니다.");
-        }
-
-        if (debugTowerAttackSpeedUpButton != null)
-        {
-            debugTowerAttackSpeedUpButton.onClick.RemoveAllListeners();
-            debugTowerAttackSpeedUpButton.onClick.AddListener(() => GameManager.Instance.DebugTowerAtaackSpeedUp());
-        }
-        else
-        {
-            Debug.LogError("debugTowerAttackSpeedUpButton이 할당되지 않았습니다.");
-        }
-
-        if (debugTowerRangeUpButton != null)
-        {
-            debugTowerRangeUpButton.onClick.RemoveAllListeners();
-            debugTowerRangeUpButton.onClick.AddListener(() => GameManager.Instance.DebugTowerRangeUp());
-        }
-        else
-        {
-            Debug.LogError("debugTowerRangeUpButton이 할당되지 않았습니다.");
-        }
-
-        if (debugPlayerHPUpButton != null)
-        {
-            debugPlayerHPUpButton.onClick.RemoveAllListeners();
-            debugPlayerHPUpButton.onClick.AddListener(() => GameManager.Instance.DebugPlayerHPUp());
-        }
-        else
-        {
-            Debug.LogError("debugPlayerHPUpButton이 할당되지 않았습니다.");
-        }
-
-        if (debugPlayerSpeedUpButton != null)
-        {
-            debugPlayerSpeedUpButton.onClick.RemoveAllListeners();
-            debugPlayerSpeedUpButton.onClick.AddListener(() => GameManager.Instance.DebugPlayerSpeedUp());
-        }
-        else
-        {
-            Debug.LogError("debugPlayerSpeedUpButton이 할당되지 않았습니다.");
-        }
+        // TEMP : 마지막 임시 설명은 무조건 있게
+        BonusLevelUpButtonArr[BonusLevelUpButtonArr.Length-1].gameObject.SetActive(true);
     }
+
+    public static Vector2Int GetRandomPair()
+    {
+        // 가능한 모든 쌍을 생성합니다.
+        List<Vector2Int> pairs = new List<Vector2Int>();
+
+        for (int i = 0; i <= 4; i++)
+        {
+            for (int j = i + 1; j <= 4; j++)
+            {
+                pairs.Add(new Vector2Int(i, j));
+            }
+        }
+
+        // 무작위로 하나의 쌍을 선택합니다.
+        int index = UnityEngine.Random.Range(0, pairs.Count); // UnityEngine.Random을 사용하여 무작위 인덱스 선택
+        return pairs[index];
+    }
+
 
     // 재귀적 찾기 유틸리티 함수
     T FindChild<T>(Transform parent, string path) where T : Component
@@ -203,6 +177,177 @@ public class HUDManager : MonoBehaviour
         return null;
     }
 
+    void DebugButtonInit()
+    {
+        // 배열로 관리하기 위해 연결
+        debugButtonArr = new Button[]
+        {
+            debugGsmeSpeedMinusButton,
+            debugGsmeSpeedButton,
+            debugWeaponAddButton,
+            debugAttackPowerUpButton,
+            debugWeaponAttackSpeedUpButton,
+            debugWeaponRangeUpButton,
+            debugTowerAttackSpeedUpButton,
+            debugTowerRangeUpButton,
+            debugPlayerHPUpButton,
+            debugPlayerSpeedUpButton
+        };
+
+        // GameManager의 디버그 메서드를 배열로 관리
+        Action[] debugActions = new Action[]
+        {
+            GameManager.Instance.DebugBtnTimeMinus,
+            GameManager.Instance.DebugBtnTimePlus,
+            GameManager.Instance.DebugWeaponMaster,
+            GameManager.Instance.DebugWeaponAtaackPowerUp,
+            GameManager.Instance.DebugWeaponAtaackSpeedUp,
+            GameManager.Instance.DebugWeaponRangeUp,
+            GameManager.Instance.DebugTowerAtaackSpeedUp,
+            GameManager.Instance.DebugTowerRangeUp,
+            GameManager.Instance.DebugPlayerHPUp,
+            GameManager.Instance.DebugPlayerSpeedUp
+        };
+
+        // 버튼과 액션의 길이가 일치하는지 확인
+        if (debugButtonArr.Length != debugActions.Length)
+        {
+            Debug.LogError("Button array and action array lengths do not match.");
+            return;
+        }
+
+        for (int i = 0; i < debugBtnDir.Length; i++)
+        {
+            debugButtonArr[i] = FindChild<Button>(transform, debugBtnDir[i]);
+        }
+
+        // 디버그 버튼 초기화 및 재연결
+        for (int i = 0; i < debugButtonArr.Length; i++)
+        {
+            if (debugButtonArr[i] != null)
+            {
+                int index = i; // 인덱스를 로컬 변수에 저장하여 올바르게 참조
+                debugButtonArr[index].onClick.RemoveAllListeners();
+                debugButtonArr[index].onClick.AddListener(() => debugActions[index]());
+            }
+            else
+            {
+                Debug.LogError($"{debugBtnDir[i]}에 해당하는 버튼이 할당되지 않았습니다.");
+            }
+        }
+    }
+
+    void BonusButtonInit()
+    {
+        BonusLevelUpButtonArr = new Button[]
+        {
+            BunusLevelUpButton1,
+            BunusLevelUpButton2,
+            BunusLevelUpButton3,
+            BunusLevelUpButton4,
+            BunusLevelUpButton5,
+            BunusLevelUpButton6,
+        };
+
+        Action[] bonusActions = new Action[]
+        {
+            BonusPowerUp,
+            BonusAttackSpeedUp,
+            BonusRangeUp,
+            BonusHPUp,
+            BonusMoveSpeedUp,
+            BonusNothing,
+        };
+
+        // 버튼과 액션의 길이가 일치하는지 확인
+        if (BonusLevelUpButtonArr.Length != bonusActions.Length)
+        {
+            Debug.LogError("Button array and action array lengths do not match.");
+            return;
+        }
+
+        for (int i = 0; i < bonusLevelupDir.Length; i++)
+        {
+            BonusLevelUpButtonArr[i] = FindChild<Button>(transform, bonusLevelupDir[i]);
+        }
+
+        // 보너스 버튼 초기화 및 재연결 
+        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        {
+            if (BonusLevelUpButtonArr[i] != null)
+            {
+                int index = i; // 인덱스를 로컬 변수에 저장하여 올바르게 참조
+                BonusLevelUpButtonArr[index].onClick.RemoveAllListeners();
+                BonusLevelUpButtonArr[index].onClick.AddListener(() => bonusActions[index]());
+            }
+            else
+            {
+                Debug.LogError($"{BonusLevelUpButtonArr[i].name}이 할당되지 않았습니다.");
+            }
+        }
+    }
+
+    void BonusPowerUp()
+    {
+        LevelUpHelper.WeaponAttackPowerUp(1);
+
+        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        {
+            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
+        }
+
+        Time.timeScale = tempTimeScale;
+    }
+
+    void BonusAttackSpeedUp()
+    {
+        LevelUpHelper.WeaponAttackSpeedUp(0.98f);
+        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        {
+            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
+        }
+
+        Time.timeScale = tempTimeScale;
+    }
+
+    void BonusRangeUp()
+    {
+        LevelUpHelper.WeaponRangedUp(0.1f);
+        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        {
+            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
+        }
+
+        Time.timeScale = tempTimeScale;
+    }
+
+    void BonusHPUp()
+    {
+        LevelUpHelper.PlayerHPUp(0);
+        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        {
+            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
+        }
+
+        Time.timeScale = tempTimeScale;
+    }
+
+    void BonusMoveSpeedUp()
+    {
+        LevelUpHelper.PlayerSpeedUp(0.1f);
+        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        {
+            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
+        }
+
+        Time.timeScale = tempTimeScale;
+    }
+
+    void BonusNothing()
+    {
+
+    }
+
     // 현재 경험치와 최대 경험치를 사용해 게이지 바를 업데이트하는 함수
     public void UpdateExperienceBar(float currentExperience, float maxExperience)
     {
@@ -221,8 +366,8 @@ public class HUDManager : MonoBehaviour
     }
 
     public void PlayerHUDUpdate(int lv, int curExp, int maxExp, int currentHP, float moveSpeed)
-    { 
-        lv+=1; //배열 관리상 +1
+    {
+        lv += 1; //배열 관리상 +1
         lvText.text = $"LV {lv} EXP {curExp}/{maxExp}";
         playerSpecText.text = $"체력/이동속도 : {currentHP}/{moveSpeed}";
         UpdateExperienceBar(curExp, maxExp);
@@ -243,7 +388,6 @@ public class HUDManager : MonoBehaviour
 
         TowerSpecText.text = $"타워 AP/AS/R : +{attackPower} / x{formattedAttackSpeed} / +{attackRange}";
     }
-
 
     public void LevelUpHintUpdate(string msg)
     {

@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 public class BaseTower : MonoBehaviour, IDamageable
 {
     //½ºÅÝ ¿µ¿ª
-    private int maxHP = 100;
+    private int maxHP = 50;
     [SerializeField] private int currentHp;
     [SerializeField] private int attackRange;
     [SerializeField] private int attackCoolTime;

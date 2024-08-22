@@ -101,7 +101,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
             if (collision.gameObject.name == "Coin3(Clone)")
                 curExp += 1;
             else if (collision.gameObject.name == "Coin2(Clone)")
-                curExp += 4;
+                curExp += 3;
             else if (collision.gameObject.name == "Coin(Clone)")
                 curExp += 10;
             Destroy(collision.gameObject);
@@ -182,6 +182,12 @@ public class BasePlayer : MonoBehaviour, IDamageable
         curExp = System.Math.Max(0, curExp - maxExp);
         maxExp += 1; //본게임 때 주석 해제
         LevelUp();
+
+        // 디버그 단에서 조건 삭제
+        if (playerLv % 10 == 0)
+        {
+            BonusLevelUp();
+        }
     }
 
     public void Debug_WeaponAdd()
@@ -281,6 +287,12 @@ public class BasePlayer : MonoBehaviour, IDamageable
         {
             print(ex.ToString());
         }
+    }
+
+    void BonusLevelUp()
+    {
+        // 플레이어 스크립트에서는 해당 함수 호출만 하고 종결(래핑)
+        GameManager.Instance.hudManager.BonusLevelUp();
     }
 
     // 궤도 무기를 일정한 간격에서 공전하게함
