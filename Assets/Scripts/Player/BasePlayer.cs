@@ -15,18 +15,21 @@ public class BasePlayer : MonoBehaviour, IDamageable
     //하위 오브젝트의 애니메이터
     private Animator animator;
 
+    // 코드 분산용 레밸업 헬퍼
+    public TmpLevelUpHelper levelUpHelper;
+
     //스텟 영역
-    static public float moveSpeed = 2.0f;
-    static public int maxHP = 20;
-    static public int currentHP = 20;
+    //static public float moveSpeed = 2.0f;
+    //static public int maxHP = 20;
+    //static public int currentHP = 20;
+    public float moveSpeed = 2.0f;
+    public int maxHP = 20;
+    public int currentHP = 20;
 
     //무기 관리
-    const int maxWeaponCount = 100;
-    public GameObject[] weapon1;
-    public GameObject weaponPrefab; 
-    GameObject LV1WeaponPrefab; 
-    GameObject LV2WeaponPrefab; 
-    GameObject LV3WeaponPrefab; 
+    public int maxWeaponCount = 100;
+    public GameObject[] obtainedWeapon;
+    public GameObject[] weaponPrefab;
 
     //아이템 자석 효과
     float attractionRange = 0.8f;   // 아이템 자석 효과 범위 (플레이어 기준)
@@ -51,6 +54,9 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
     // 참조용 스트링 Arr
     string[] weaponName = new string[3] { "Weapon/유튜브쟁이", "Weapon/치지직갈걸", "Weapon/숲에남을걸" };
+    string[] coinName = new string[3] { "Bronze(Clone)", "Silver(Clone)", "Gold(Clone)" };
+    int[] coinExpQuantity = new int[3] { 1, 3, 10 };
+    public int[] weaponAddClassCut = new int[3] { 60, 90, 100 };
 
     void Start()
     {
@@ -58,29 +64,30 @@ public class BasePlayer : MonoBehaviour, IDamageable
         itemLayer = LayerMask.GetMask("Item");
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        currentHP = maxHP;
-
         // 하위 스크립트 로드
         itemcollector = new ItemCollector();
         gatcha = new Gatcha();
+        levelUpHelper = new TmpLevelUpHelper();
 
         // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
         animator = transform.Find("UnitRoot").GetComponent<Animator>();
 
         // 무기 프리펩 로드
-        LV1WeaponPrefab = Resources.Load<GameObject>(weaponName[0]); // Instantiate로 생성한 프리팹을 참조
-        LV2WeaponPrefab = Resources.Load<GameObject>(weaponName[1]); // Instantiate로 생성한 프리팹을 참조
-        LV3WeaponPrefab = Resources.Load<GameObject>(weaponName[2]); // Instantiate로 생성한 프리팹을 참조
+        weaponPrefab = new GameObject[weaponName.Length];
+        for (int i = 0; i < weaponName.Length; i++)
+        {
+            weaponPrefab[i] = Resources.Load<GameObject>(weaponName[i]);
+        }
 
         // 무기 1개 기본 제공
-        weapon1 = new GameObject[maxWeaponCount];
-        WeaponAdd();
+        obtainedWeapon = new GameObject[maxWeaponCount];
+        levelUpHelper.WeaponAdd(this, this.transform);
 
-        //체력바
+        // 체력바 최초 세팅
+        currentHP = maxHP;
         healthBarForeground = transform.Find("HPBar/RED").GetComponent<RectTransform>();
         originalScale = healthBarForeground.localScale;
         UpdateHealthBar();
-
     }
 
     private void Update()
@@ -95,19 +102,18 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // 코인 획득
         if (collision.CompareTag("Item"))
         {
-            // 제출용 이지
-            if (collision.gameObject.name == "Coin3(Clone)")
-                curExp += 1;
-            else if (collision.gameObject.name == "Coin2(Clone)")
-                curExp += 3;
-            else if (collision.gameObject.name == "Coin(Clone)")
-                curExp += 10;
+            if (collision.gameObject.name == coinName[0]) curExp += coinExpQuantity[0];
+            else if (collision.gameObject.name == coinName[1]) curExp += coinExpQuantity[1];
+            else if (collision.gameObject.name == coinName[2]) curExp += coinExpQuantity[2];
+
             Destroy(collision.gameObject);
             CheckLevelUp();
         }
 
+        // 장외
         if (collision.gameObject.CompareTag("Boundary"))
         {
             rigid.velocity = Vector2.zero;
@@ -192,100 +198,76 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
     public void Debug_WeaponAdd()
     {
-        if (LV1WeaponPrefab != null)
+        for (int i = 0; i < maxWeaponCount; i++)
         {
-            for (int i = 0; i < maxWeaponCount; i++)
+            if (obtainedWeapon[i] == null)
             {
-                if (weapon1[i] == null)
-                {
-                    GameObject weapon;
+                GameObject weapon;
 
-                    weapon = Instantiate(LV3WeaponPrefab, transform.position, Quaternion.identity);
+                weapon = Instantiate(weaponPrefab[2], transform.position, Quaternion.identity);
 
-                    weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
+                weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
 
-                    weapon1[i] = weapon;
-                    WeaponSort();
-                    GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
-                    return;
-                }
+                obtainedWeapon[i] = weapon;
+                levelUpHelper.WeaponSort(this);
+                GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
+                return;
             }
-        }
-        else
-        {
-            Debug.LogWarning("무기 추가 실패");
         }
     }
 
     //TODO : 업그레이드 관련 다 Helper쪽으로 빼기
-    void WeaponAdd()
-    {
-        if (LV1WeaponPrefab != null)
-        {
-            for (int i = 0; i < maxWeaponCount; i++)
-            {
-                if (weapon1[i] == null)
-                {
-                    GameObject weapon;
+    //void WeaponAdd()
+    //{
+        //for (int i = 0; i < maxWeaponCount; i++)
+        //{
+        //    if (obtainedWeapon[i] == null)
+        //    {
+        //        GameObject weapon;
 
-                    int index = UnityEngine.Random.Range(0, 100);
+        //        int index = UnityEngine.Random.Range(1, 101); //1부터 101
 
-                    //TODO 하드코딩 제거
-                    //제출용 이지 모드
-                    if (index <60) weapon = Instantiate(LV1WeaponPrefab, transform.position, Quaternion.identity);
-                    else if (index < 90) weapon = Instantiate(LV2WeaponPrefab, transform.position, Quaternion.identity);
-                    else weapon = Instantiate(LV3WeaponPrefab, transform.position, Quaternion.identity);
+        //        if (index < weaponAddClassCut[0]) weapon = Instantiate(weaponPrefab[0], transform.position, Quaternion.identity);
+        //        else if (index < weaponAddClassCut[1]) weapon = Instantiate(weaponPrefab[1], transform.position, Quaternion.identity);
+        //        else weapon = Instantiate(weaponPrefab[2], transform.position, Quaternion.identity);
 
-                    weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
+        //        weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
 
-                    weapon1[i] = weapon;
-                    WeaponSort();
-                    GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
-                    return;
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("무기 추가 실패");
-        }
-    }
+        //        obtainedWeapon[i] = weapon;
+        //        WeaponSort();
+        //        GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
+        //        return;
+        //    }
+        //}
+    //}
 
     void LevelUp()
     {
-        //디버그하려고 try 걸음
-        try
+        int index = gatcha.levelUpGatcha[playerLv++];
+
+        if (index == 0)
         {
-            int index = gatcha.levelUpGatcha[playerLv++];
+            int _weaponIndex = gatcha.weaponGatcha[gatcha_weaponIndex++];
 
-            if (index == 0)
-            {
-                int _weaponIndex = gatcha.weaponGatcha[gatcha_weaponIndex++];
-
-                if (_weaponIndex == 0) WeaponAdd();
-                else if (_weaponIndex == 1) LevelUpHelper.WeaponAttackSpeedUp();
-                else if (_weaponIndex == 2) LevelUpHelper.WeaponRangedUp();
-                else if (_weaponIndex == 3) LevelUpHelper.WeaponAttackPowerUp(); 
-            }
-            else if (index == 1)
-            {
-                int _towerIndex = gatcha.towerGatcha[gatcha_towerIndex++];
-                LevelUpHelper.TowerUpgrade(_towerIndex);
-            }
-            else if (index == 2)
-            {
-                int _playerIndex = gatcha.playerGatcha[gatcha_playerIndex++];
-                LevelUpHelper.PlayerUpgrade(_playerIndex);
-                UpdateHealthBar(); //체력 업그레이드 시 업그레이드 된 체력 반영
-            }
-            else
-            {
-                print("LEVELUP ERROR");
-            }
+            if (_weaponIndex == 0) levelUpHelper.WeaponAdd(this, this.transform);
+            else if (_weaponIndex == 1) levelUpHelper.WeaponAttackSpeedUp();
+            else if (_weaponIndex == 2) levelUpHelper.WeaponRangedUp();
+            else if (_weaponIndex == 3) levelUpHelper.WeaponAttackPowerUp();
         }
-        catch (Exception ex)
+        else if (index == 1)
         {
-            print(ex.ToString());
+            int _towerIndex = gatcha.towerGatcha[gatcha_towerIndex++];
+            levelUpHelper.TowerUpgrade(_towerIndex);
+        }
+        else if (index == 2)
+        {
+            int _playerIndex = gatcha.playerGatcha[gatcha_playerIndex++];
+            levelUpHelper.PlayerUpgrade(this, _playerIndex);
+            UpdateHealthBar(); //체력 업그레이드 시 업그레이드 된 체력 반영
+        }
+        else
+        {
+            print("LEVELUP ERROR");
         }
     }
 
@@ -296,31 +278,31 @@ public class BasePlayer : MonoBehaviour, IDamageable
     }
 
     // 궤도 무기를 일정한 간격에서 공전하게함
-    void WeaponSort()
-    {
-        GameObject[] weapons1 = GameObject.FindGameObjectsWithTag("LV1Weapon");
-        GameObject[] weapons2 = GameObject.FindGameObjectsWithTag("LV2Weapon");
-        GameObject[] weapons3 = GameObject.FindGameObjectsWithTag("LV3Weapon");
+    //void WeaponSort()
+    //{
+        //GameObject[] weapons1 = GameObject.FindGameObjectsWithTag("LV1Weapon");
+        //GameObject[] weapons2 = GameObject.FindGameObjectsWithTag("LV2Weapon");
+        //GameObject[] weapons3 = GameObject.FindGameObjectsWithTag("LV3Weapon");
 
-        int weaponCount = weapons1.Length + weapons2.Length + weapons3.Length;
+        //int weaponCount = weapons1.Length + weapons2.Length + weapons3.Length;
 
-        try
-        {
-            int rad = 360 / weaponCount;
+        //try
+        //{
+        //    int rad = 360 / weaponCount;
 
-            for (int i = 0; i < weaponCount; i++)
-            {
-                BaseWeapon bweapon = weapon1[i].GetComponent<BaseWeapon>();
-                bweapon.currentAngle = rad * i;
-            }
-        }
+        //    for (int i = 0; i < weaponCount; i++)
+        //    {
+        //        BaseWeapon bweapon = obtainedWeapon[i].GetComponent<BaseWeapon>();
+        //        bweapon.currentAngle = rad * i;
+        //    }
+        //}
 
-        catch (Exception ex)
-        {
-            print("sort err");
-            print(ex.ToString());
-        }
-    }
+        //catch (Exception ex)
+        //{
+        //    print("sort err");
+        //    print(ex.ToString());
+        //}
+    //}
 
     // 자석효과 범위 디버그
     private void OnDrawGizmosSelected()

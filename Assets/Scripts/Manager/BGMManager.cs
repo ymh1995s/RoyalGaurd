@@ -9,36 +9,25 @@ public class BGMManager : MonoBehaviour
     AudioClip[] Audio_BGM;
     string[] bgmDir = { "Sounds/BGM/bgm1", "Sounds/BGM/bgm2", "Sounds/BGM/bgm3", "Sounds/BGM/bgm4" };
 
-        private int currentBGMIndex = 0; // 현재 재생 중인 BGM의 인덱스
+    private int currentBGMIndex = 0; // 현재 재생 중인 BGM의 인덱스
 
     [Range(0.0f, 1.0f)]
     float bgmVolume = 0.5f; // 기본 볼륨 설정 (0.0 ~ 1.0)
 
     void Awake()
     {
-        // Singleton 패턴을 적용하여 오디오 매니저의 인스턴스를 유지합니다.
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            audioSource = gameObject.AddComponent<AudioSource>();
-            LoadAudioClips();
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        SetSingleton();
     }
 
     void Start()
     {
-
         // 씬이 로드될 때 이벤트를 구독합니다.
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         // 초기에 첫 씬에서 BGM 재생
         OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
+
     void Update()
     {
         // 현재 곡이 재생 중이지 않다면 다음 곡을 재생
@@ -48,7 +37,6 @@ public class BGMManager : MonoBehaviour
         }
     }
 
-    //void OnDestroy()
     void OnDisable()
     {
         // 씬 로드 이벤트 구독을 해제합니다.
@@ -74,6 +62,23 @@ public class BGMManager : MonoBehaviour
         //    default:
         //        break;
         //}
+    }
+
+    void SetSingleton()
+    {
+        // Singleton 패턴을 적용하여 오디오 매니저의 인스턴스를 유지합니다.
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            audioSource = gameObject.AddComponent<AudioSource>();
+            LoadAudioClips();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void LoadAudioClips()

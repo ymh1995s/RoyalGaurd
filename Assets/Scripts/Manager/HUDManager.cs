@@ -7,8 +7,6 @@ using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
 public class HUDManager : MonoBehaviour
 {
     // TODO : 컴포넌트 배열 등으로 그룹 관리하기
-    // TODO : 디버그 그룹하고 스크립트 분리해야 할 듯
-    // TODO : 더해서 여기는 너무 막해서 코드 정리 필요
 
     //스텟 영역
     private Text lvText;
@@ -20,6 +18,7 @@ public class HUDManager : MonoBehaviour
     // 보너스 레밸업 버튼 컴포넌트
     public GameObject BonusLevelUpButtonGroup;
     public Button[] BonusLevelUpButtonArr;
+
     // TODO 숫자 하드 코딩 말고 네이밍으로 바꿔야됨
     // 아닌가 나중에 다른 능력으로 바꿀거라 임시로는 괜찮은가
     public Button BunusLevelUpButton1;
@@ -65,7 +64,7 @@ public class HUDManager : MonoBehaviour
 
     private void Awake()
     {
-        TextObjectSet();
+        HUDObjectSet();
     }
 
     private void Start()
@@ -79,21 +78,20 @@ public class HUDManager : MonoBehaviour
         BonusButtonInit();
     }
 
-    private void TextObjectSet()
+    private void HUDObjectSet()
     {
         // 경험지 영역
         backgroundPanel = FindChild<RectTransform>(transform, expDir[0]);
         experienceBar = FindChild<RectTransform>(transform, expDir[1]);
 
-        //스텟 영역
+        // 스텟 영역
         lvText = FindChild<Text>(transform, specTextDir[0]);
         playerSpecText = FindChild<Text>(transform, specTextDir[1]);
         WeaponSpecText = FindChild<Text>(transform, specTextDir[2]);
         TowerSpecText = FindChild<Text>(transform, specTextDir[3]);
         levelupHintText = FindChild<Text>(transform, levelUpHintDir);
 
-        //나중에 옮기기
-        // GameObject를 찾기 위해 Transform.Find를 사용합니다
+        // 보너스 레밸업 영역
         Transform bonusLevelUpTransform = transform.Find(bonusLevelupMsterDir);
         if (bonusLevelUpTransform != null)
         {
@@ -115,24 +113,24 @@ public class HUDManager : MonoBehaviour
         BonusLevelUpButtonGroup.SetActive(true);
 
         // 2. 하위 버튼을 모두 가림
-        for(int i = 0; i< BonusLevelUpButtonArr.Length;i++)
+        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
         {
             BonusLevelUpButtonArr[i].gameObject.SetActive(false);
         }
 
         // 3. 랜덤한 X(temp : 2)개는 선택 및 보이게
         Vector2Int pair = GetRandomPair();
-        
-        for(int i=0; i< BonusLevelUpButtonArr.Length; i++)
+
+        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
         {
-            if( i == pair.x || i==pair.y)
+            if (i == pair.x || i == pair.y)
             {
                 BonusLevelUpButtonArr[i].gameObject.SetActive(true);
             }
         }
 
         // TEMP : 마지막 임시 설명은 무조건 있게
-        BonusLevelUpButtonArr[BonusLevelUpButtonArr.Length-1].gameObject.SetActive(true);
+        BonusLevelUpButtonArr[BonusLevelUpButtonArr.Length - 1].gameObject.SetActive(true);
     }
 
     public static Vector2Int GetRandomPair()
@@ -140,6 +138,7 @@ public class HUDManager : MonoBehaviour
         // 가능한 모든 쌍을 생성합니다.
         List<Vector2Int> pairs = new List<Vector2Int>();
 
+        // TODO : 하드 코딩 제거
         for (int i = 0; i <= 4; i++)
         {
             for (int j = i + 1; j <= 4; j++)
@@ -153,33 +152,8 @@ public class HUDManager : MonoBehaviour
         return pairs[index];
     }
 
-
-    // 재귀적 찾기 유틸리티 함수
-    T FindChild<T>(Transform parent, string path) where T : Component
-    {
-        Transform child = parent.Find(path);
-        if (child != null)
-        {
-            T component = child.GetComponent<T>();
-            if (component != null)
-            {
-                return component;
-            }
-            else
-            {
-                Debug.LogWarning($"경고: '{path}' 경로에서 '{typeof(T)}' 컴포넌트를 찾을 수 없습니다.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"경고: '{path}' 경로에서 자식 오브젝트를 찾을 수 없습니다.");
-        }
-        return null;
-    }
-
     void DebugButtonInit()
     {
-        // 배열로 관리하기 위해 연결
         debugButtonArr = new Button[]
         {
             debugGsmeSpeedMinusButton,
@@ -194,7 +168,6 @@ public class HUDManager : MonoBehaviour
             debugPlayerSpeedUpButton
         };
 
-        // GameManager의 디버그 메서드를 배열로 관리
         Action[] debugActions = new Action[]
         {
             GameManager.Instance.DebugBtnTimeMinus,
@@ -209,32 +182,7 @@ public class HUDManager : MonoBehaviour
             GameManager.Instance.DebugPlayerSpeedUp
         };
 
-        // 버튼과 액션의 길이가 일치하는지 확인
-        if (debugButtonArr.Length != debugActions.Length)
-        {
-            Debug.LogError("Button array and action array lengths do not match.");
-            return;
-        }
-
-        for (int i = 0; i < debugBtnDir.Length; i++)
-        {
-            debugButtonArr[i] = FindChild<Button>(transform, debugBtnDir[i]);
-        }
-
-        // 디버그 버튼 초기화 및 재연결
-        for (int i = 0; i < debugButtonArr.Length; i++)
-        {
-            if (debugButtonArr[i] != null)
-            {
-                int index = i; // 인덱스를 로컬 변수에 저장하여 올바르게 참조
-                debugButtonArr[index].onClick.RemoveAllListeners();
-                debugButtonArr[index].onClick.AddListener(() => debugActions[index]());
-            }
-            else
-            {
-                Debug.LogError($"{debugBtnDir[i]}에 해당하는 버튼이 할당되지 않았습니다.");
-            }
-        }
+        InitializeButtons(debugButtonArr, debugBtnDir, debugActions, "Debug");
     }
 
     void BonusButtonInit()
@@ -259,88 +207,90 @@ public class HUDManager : MonoBehaviour
             BonusNothing,
         };
 
+        InitializeButtons(BonusLevelUpButtonArr, bonusLevelupDir, bonusActions, "Bonus");
+    }
+
+
+    void InitializeButtons(Button[] buttonArr, string[] buttonDir, Action[] actions, string errorMessagePrefix)
+    {
         // 버튼과 액션의 길이가 일치하는지 확인
-        if (BonusLevelUpButtonArr.Length != bonusActions.Length)
+        if (buttonArr.Length != actions.Length)
         {
-            Debug.LogError("Button array and action array lengths do not match.");
+            Debug.LogError($"{errorMessagePrefix} Button array and action array lengths do not match.");
             return;
         }
 
-        for (int i = 0; i < bonusLevelupDir.Length; i++)
+        // 버튼 배열 초기화
+        for (int i = 0; i < buttonDir.Length; i++)
         {
-            BonusLevelUpButtonArr[i] = FindChild<Button>(transform, bonusLevelupDir[i]);
+            buttonArr[i] = FindChild<Button>(transform, buttonDir[i]);
         }
 
-        // 보너스 버튼 초기화 및 재연결 
-        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        // 버튼 초기화 및 액션 할당
+        for (int i = 0; i < buttonArr.Length; i++)
         {
-            if (BonusLevelUpButtonArr[i] != null)
+            if (buttonArr[i] != null)
             {
                 int index = i; // 인덱스를 로컬 변수에 저장하여 올바르게 참조
-                BonusLevelUpButtonArr[index].onClick.RemoveAllListeners();
-                BonusLevelUpButtonArr[index].onClick.AddListener(() => bonusActions[index]());
+                buttonArr[index].onClick.RemoveAllListeners();
+                buttonArr[index].onClick.AddListener(() => actions[index]());
             }
             else
             {
-                Debug.LogError($"{BonusLevelUpButtonArr[i].name}이 할당되지 않았습니다.");
+                Debug.LogError($"{errorMessagePrefix} {buttonDir[i]}에 해당하는 버튼이 할당되지 않았습니다.");
             }
         }
     }
 
-    void BonusPowerUp()
+    void ApplyBonus(Action levelUpAction)
     {
-        LevelUpHelper.WeaponAttackPowerUp(1);
+        // 레벨업 기능 적용
+        levelUpAction();
 
-        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        // 모든 보너스 버튼 비활성화
+        foreach (var button in BonusLevelUpButtonArr)
         {
-            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
+            button.gameObject.SetActive(false);
         }
 
+        // 시간 스케일을 원래대로 복원
         Time.timeScale = tempTimeScale;
+    }
+
+
+    void BonusPowerUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackPowerUp(1));
+        //ApplyBonus(() => LevelUpHelper.WeaponAttackPowerUp(1));
+
+        //LevelUpHelper.WeaponAttackPowerUp(1);
+
+        //for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
+        //{
+        //    BonusLevelUpButtonArr[i].gameObject.SetActive(false);
+        //}
+
+        //Time.timeScale = tempTimeScale;
     }
 
     void BonusAttackSpeedUp()
     {
-        LevelUpHelper.WeaponAttackSpeedUp(0.98f);
-        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
-        {
-            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
-        }
-
-        Time.timeScale = tempTimeScale;
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackSpeedUp(0.98f));
     }
 
     void BonusRangeUp()
     {
-        LevelUpHelper.WeaponRangedUp(0.1f);
-        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
-        {
-            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
-        }
-
-        Time.timeScale = tempTimeScale;
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponRangedUp(0.1f));
     }
 
     void BonusHPUp()
     {
-        LevelUpHelper.PlayerHPUp(0);
-        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
-        {
-            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
-        }
-
-        Time.timeScale = tempTimeScale;
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerHPUp(GameManager.Instance.player, 0));
     }
 
     void BonusMoveSpeedUp()
     {
-        LevelUpHelper.PlayerSpeedUp(0.1f);
-        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
-        {
-            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
-        }
-
-        Time.timeScale = tempTimeScale;
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(GameManager.Instance.player, 0.1f));
     }
 
     void BonusNothing()
@@ -437,4 +387,28 @@ public class HUDManager : MonoBehaviour
         // 코루틴이 끝났음을 표시하기 위해 null로 설정
         fadeOutCoroutine = null;
     }
+
+    // 재귀적 찾기 유틸리티 함수
+    T FindChild<T>(Transform parent, string path) where T : Component
+    {
+        Transform child = parent.Find(path);
+        if (child != null)
+        {
+            T component = child.GetComponent<T>();
+            if (component != null)
+            {
+                return component;
+            }
+            else
+            {
+                Debug.LogWarning($"경고: '{path}' 경로에서 '{typeof(T)}' 컴포넌트를 찾을 수 없습니다.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"경고: '{path}' 경로에서 자식 오브젝트를 찾을 수 없습니다.");
+        }
+        return null;
+    }
 }
+

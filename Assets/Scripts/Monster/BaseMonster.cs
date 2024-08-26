@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class BaseMonster : MonoBehaviour
 {
+    // TODO : GPT가 해주는 리펙토링 이해하고 다시 리펙토링
+
     private Rigidbody2D rigid;
     private bool isDying = false;   // 몬스터 생존 여부
     protected enum Level { LV1, LV2, LV3, LV4, LV5, BOSS }
@@ -23,8 +25,7 @@ public class BaseMonster : MonoBehaviour
     public int attackPower = 1;
     private float attackInterval = 1.0f;
     private float lastAttackTime = 0.0f;
-    //protected int[] master_Hp = new int[6] { 10, 100, 200, 280, 360, 30000 };
-    protected int[] master_Hp = new int[6] { 10, 70, 140, 200, 250, 20000 }; //제출용 이지 버전 70% 마지노
+    protected int[] master_Hp = new int[6] { 10, 100, 200, 280, 360, 30000 };
 
     //오디오 영역
     public AudioClip[] deathSound = new AudioClip[5]; // 사망 사운드 종류
@@ -34,6 +35,8 @@ public class BaseMonster : MonoBehaviour
 
     // 참조용 스트링 Arr
     string[] deathSoundName = new string[5] { "Sounds/SFX/아이고난1", "Sounds/SFX/아이고난2", "Sounds/SFX/아이고난3", "Sounds/SFX/아이고난4", "Sounds/SFX/아이고난5", };
+    string[] coinName = new string[3] { "Coin/Bronze", "Coin/Silver", "Coin/Gold"};
+    int[] coinClassRangeCut = new int[3] {70, 97, 100 };
 
     protected virtual void Start()
     {
@@ -82,6 +85,7 @@ public class BaseMonster : MonoBehaviour
         SetAudio();
         SetSearch();
     }
+
     protected void Update()
     {
         ChooseTarget();
@@ -227,14 +231,12 @@ public class BaseMonster : MonoBehaviour
         // 중복 수혜 방지
         if (isDying == true) return;
 
-        int index = Random.Range(0, 100);
+        int index = Random.Range(1, 101); //1부터 100
         string coin;
 
-        //TODO? 하드코딩 제거?
-        //제출용 이지 모드
-        if (index < 7) coin = "Coin/Coin";
-        else if (index < 40) coin = "Coin/Coin2";
-        else coin = "Coin/Coin3";
+        if (index < coinClassRangeCut[0]) coin = coinName[0];
+        else if (index < coinClassRangeCut[1]) coin = coinName[1];
+        else coin = coinName[2];
 
         // Resources 폴더에서 아이템 프리팹을 로드
         GameObject itemPrefab = Resources.Load<GameObject>(coin);
@@ -300,6 +302,8 @@ public class BaseMonster : MonoBehaviour
             }
             yield return null;
         }
+
+        attackCoroutine = null; // 코루틴 종료 후 명시적으로 null 설정
     }
 
     private void OnDrawGizmos()

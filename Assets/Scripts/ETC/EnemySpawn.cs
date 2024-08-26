@@ -10,7 +10,10 @@ public class EnemySpawn : MonoBehaviour
     private float spawnInterval_changeInterval; // 생성 간격 변경 => changeInterval/3
     private int currentPrefabIndex = 0;
     private string[] prefabNames = { "Monster/LV1", "Monster/LV2", "Monster/LV3", "Monster/LV4", "Monster/LV5"};
+    bool isLastStage = false;
 
+    float[] topSpawnPointRange = {1f,30f,-6f,7f };
+    float[] bottomSpawnPointRange = {-16f, 30f, -6f, -22f };
 
     void Start()
     {
@@ -28,18 +31,16 @@ public class EnemySpawn : MonoBehaviour
             // TODO 오브젝트 풀링
 
             // (윗쪽 스폰) 범위 내에서 랜덤한 위치를 설정
-            float randomX = Random.Range(1f, 30f);
-            float randomY = Random.Range(-6f, 7f);
+            float randomX = Random.Range(topSpawnPointRange[0], topSpawnPointRange[1]);
+            float randomY = Random.Range(topSpawnPointRange[2], topSpawnPointRange[3]);
 
             // 오브젝트의 위치를 설정
             Vector3 position = new Vector3(randomX, randomY, transform.position.z);
             Instantiate(objectToSpawn, position, transform.rotation);
 
-            // 나중에 함수로 구분해서 코드로 줄여놓을까?
-            // 하드코딩도 줄일 수 있으면 최소화
             // (아래쪽 스폰) 범위 내에서 랜덤한 위치를 설정
-            randomX = Random.Range(-16f, 30f);
-            randomY = Random.Range(-6f, -22f);
+            randomX = Random.Range(bottomSpawnPointRange[0], bottomSpawnPointRange[1]);
+            randomY = Random.Range(bottomSpawnPointRange[2], bottomSpawnPointRange[3]);
 
             // 오브젝트의 위치를 설정
             position = new Vector3(randomX, randomY, transform.position.z);
@@ -54,7 +55,7 @@ public class EnemySpawn : MonoBehaviour
     {
         while (true)
         {
-            float[] multipliers = { 0.75f, 0.5f, 1f }; // 반복될 생성 간격 배열
+            float[] multipliers = { 0.75f, 0.5f, 1f }; // 스폰 주기에 곱셈 
             int index = 0;
 
             while (true)
@@ -62,6 +63,12 @@ public class EnemySpawn : MonoBehaviour
                 yield return new WaitForSeconds(spawnInterval_changeInterval); // 20초 대기
                 spawnInterval = 1f * multipliers[index]; // 원래 spawnInterval(1f)에 배수를 곱함
                 index = (index + 1) % multipliers.Length; // 인덱스를 순환시킴
+
+                //마지막 스테이지는 항상 최고 속도 스폰
+                if (isLastStage == true)
+                {
+                    spawnInterval = 1f * 0.5f;
+                }
             }
         }
     }
@@ -86,6 +93,7 @@ public class EnemySpawn : MonoBehaviour
             // 배열의 마지막 인덱스에 도달하면 코루틴 종료
             if (currentPrefabIndex == prefabNames.Length - 1)
             {
+                isLastStage = true;
                 Debug.Log("배열의 마지막 프리팹에 도달했습니다. 코루틴을 종료합니다.");
                 yield break;
             }

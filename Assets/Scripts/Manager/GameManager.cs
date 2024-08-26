@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
+// TODO : 모든 스크립트에서 public 삭제
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -13,20 +14,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
-    void Start()
-    {
-        Time.timeScale += 0.5f; //제출용 스겜 (1.5배속)
+        SetSingleton();
     }
 
     void Update()
@@ -34,7 +22,7 @@ public class GameManager : MonoBehaviour
         UpdateTimer(); // 매 프레임 시간 업데이트
     }
 
-    // OnEnxable : MonoBehavior가 활성화될 때 호출
+    // OnEnable : MonoBehavior가 활성화될 때 호출
     void OnEnable()
     {
         // 해당 씬(게임매니저가 있는 씬) 이벤트 구독
@@ -58,6 +46,8 @@ public class GameManager : MonoBehaviour
         // HUDManager를 동적으로 찾음
         hudManager = FindObjectOfType<HUDManager>();
 
+
+        // TODO 매번 출력되는 에러메시지 씬에 따라 에러 안나게 처리
         if (hudManager != null)
         {
             // HUDManager의 버튼 초기화 메서드 호출
@@ -71,6 +61,19 @@ public class GameManager : MonoBehaviour
         ResetStaticParameter();
     }
 
+    void SetSingleton()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void ResetStaticParameter()
     {
         //TODO : Static 미사용
@@ -81,9 +84,9 @@ public class GameManager : MonoBehaviour
         BaseTower.detectionRadiusPlus = 1.0f;  // 타워의 투가 탐지 반경
 
         // BasePlayer
-        BasePlayer.moveSpeed = 2.0f;
-        BasePlayer.maxHP = 20;
-        BasePlayer.currentHP = 20;
+        //BasePlayer.moveSpeed = 2.0f;
+        //BasePlayer.maxHP = 20;
+        //BasePlayer.currentHP = 20;
 
         // Projectile
         BaseProjectile.attackPowerUp = 0;
@@ -128,36 +131,43 @@ public class GameManager : MonoBehaviour
 
     public void DebugWeaponAtaackPowerUp()
     {
-        LevelUpHelper.WeaponAttackPowerUp();
+        //LevelUpHelper.WeaponAttackPowerUp();
+        player.levelUpHelper.WeaponAttackPowerUp();
     }
 
     public void DebugWeaponAtaackSpeedUp()
     {
-        LevelUpHelper.WeaponAttackSpeedUp();
+        // LevelUpHelper.WeaponAttackSpeedUp();
+        player.levelUpHelper.WeaponAttackSpeedUp();
     }
 
     public void DebugWeaponRangeUp()
     {
-        LevelUpHelper.WeaponRangedUp();
+        // LevelUpHelper.WeaponRangedUp();
+        player.levelUpHelper.WeaponRangedUp();
     }
 
     public void DebugTowerAtaackSpeedUp()
     {
-        LevelUpHelper.TowerAttackSpeedUp();
+        // LevelUpHelper.TowerAttackSpeedUp();
+        player.levelUpHelper.TowerAttackSpeedUp();
     }
 
     public void DebugTowerRangeUp()
     {
-        LevelUpHelper.TowerRangeUp();
+        // LevelUpHelper.TowerRangeUp();
+        player.levelUpHelper.TowerRangeUp();
     }
 
     public void DebugPlayerHPUp()
     {
-        LevelUpHelper.PlayerHPUp();
+        // LevelUpHelper.PlayerHPUp();
+        player.levelUpHelper.PlayerHPUp(player);
     }
 
     public void DebugPlayerSpeedUp()
     {
-        LevelUpHelper.PlayerSpeedUp();
+        // LevelUpHelper.PlayerSpeedUp();
+        player.levelUpHelper.PlayerSpeedUp(player);
     }
 }
