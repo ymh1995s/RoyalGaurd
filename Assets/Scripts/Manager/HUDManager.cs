@@ -6,8 +6,6 @@ using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
 
 public class HUDManager : MonoBehaviour
 {
-    // TODO : HUD 스크립트가 무거워 지려고 하니 분리할 것
-
     //스텟 영역
     private Text lvText;
     private Text playerSpecText;
