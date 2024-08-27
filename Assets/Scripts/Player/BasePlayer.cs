@@ -1,5 +1,6 @@
 using NUnit.Framework.Constraints;
 using System;
+using System.Collections;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -25,6 +26,8 @@ public class BasePlayer : MonoBehaviour, IDamageable
     public float moveSpeed = 2.0f;
     public int maxHP = 20;
     public int currentHP = 20;
+    int hpAutoRecoverInterval = 20;
+    public bool isObtainedAutoRecover = false;
 
     //무기 관리
     public int maxWeaponCount = 100;
@@ -88,6 +91,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         healthBarForeground = transform.Find("HPBar/RED").GetComponent<RectTransform>();
         originalScale = healthBarForeground.localScale;
         UpdateHealthBar();
+        StartCoroutine(AutoHpRecover());
     }
 
     private void Update()
@@ -252,32 +256,21 @@ public class BasePlayer : MonoBehaviour, IDamageable
         GameManager.Instance.hudManager.BonusLevelUp();
     }
 
-    // 궤도 무기를 일정한 간격에서 공전하게함
-    //void WeaponSort()
-    //{
-        //GameObject[] weapons1 = GameObject.FindGameObjectsWithTag("LV1Weapon");
-        //GameObject[] weapons2 = GameObject.FindGameObjectsWithTag("LV2Weapon");
-        //GameObject[] weapons3 = GameObject.FindGameObjectsWithTag("LV3Weapon");
+    private IEnumerator AutoHpRecover()
+    {
+        while (true)
+        {
+            if(isObtainedAutoRecover == true)
+            {
+                // 변수를 1씩 증가
+                currentHP = System.Math.Min(currentHP + 1, maxHP);
+                UpdateHealthBar();
+            }
 
-        //int weaponCount = weapons1.Length + weapons2.Length + weapons3.Length;
-
-        //try
-        //{
-        //    int rad = 360 / weaponCount;
-
-        //    for (int i = 0; i < weaponCount; i++)
-        //    {
-        //        BaseWeapon bweapon = obtainedWeapon[i].GetComponent<BaseWeapon>();
-        //        bweapon.currentAngle = rad * i;
-        //    }
-        //}
-
-        //catch (Exception ex)
-        //{
-        //    print("sort err");
-        //    print(ex.ToString());
-        //}
-    //}
+            // 지정된 시간(10초) 동안 대기
+            yield return new WaitForSeconds(hpAutoRecoverInterval);
+        }
+    }
 
     // 자석효과 범위 디버그
     private void OnDrawGizmosSelected()

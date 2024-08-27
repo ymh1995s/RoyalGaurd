@@ -36,7 +36,8 @@ public class BaseMonster : MonoBehaviour
     // 참조용 스트링 Arr
     string[] deathSoundName = new string[5] { "Sounds/SFX/아이고난1", "Sounds/SFX/아이고난2", "Sounds/SFX/아이고난3", "Sounds/SFX/아이고난4", "Sounds/SFX/아이고난5", };
     string[] coinName = new string[3] { "Coin/Bronze", "Coin/Silver", "Coin/Gold"};
-    int[] coinClassRangeCut = new int[3] {70, 97, 100 };
+    static public int[] coinClassRangeCut = new int[3] { 70, 97, 100 };
+    int[] tempCoinClassRangeCut_Up = new int[3] { 60, 95, 100 };
 
     protected virtual void Start()
     {
@@ -262,7 +263,6 @@ public class BaseMonster : MonoBehaviour
             if (projectile != null)
             {
                 TakeDamage(projectile.attackPower);
-                //projectile.Destroy();
                 projectile.CheckDestroy();
             }
         }

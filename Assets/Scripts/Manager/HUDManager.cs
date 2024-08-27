@@ -6,7 +6,6 @@ using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
 
 public class HUDManager : MonoBehaviour
 {
-    // TODO : 컴포넌트 배열 등으로 그룹 관리하기
     // TODO : HUD 스크립트가 무거워 지려고 하니 분리할 것
 
     //스텟 영역
@@ -17,11 +16,10 @@ public class HUDManager : MonoBehaviour
     private Text levelupHintText;
 
     // 보너스 레밸업 버튼 컴포넌트
-    public GameObject BonusLevelUpButtonGroup;
-    public Button[] BonusLevelUpButtonArr;
-
     // TODO 숫자 하드 코딩 말고 네이밍으로 바꿔야됨
     // 아닌가 나중에 다른 능력으로 바꿀거라 임시로는 괜찮은가
+    public GameObject BonusLevelUpButtonGroup;
+    public Button[] BonusLevelUpButtonArr;
     public Button BonusLevelUpButton1;
     public Button BonusLevelUpButton2;
     public Button BonusLevelUpButton3;
@@ -68,31 +66,34 @@ public class HUDManager : MonoBehaviour
         "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트"};
     private string[] expDir = { "EXP/BaseBar", "EXP/BaseBar/RealBar" };
 
+    // 보너스 버튼 등장 가중치
+    Dictionary<int, float> bonusAppearanceWeight;
+
     private void Awake()
     {
         HUDObjectSet();
     }
-    Dictionary<int, float> probabilities;
+
     private void Start()
     {
         InitializeButtons(); // 버튼 초기화
 
         // 각 숫자에 대한 포함 확률을 설정합니다.
-        probabilities = new Dictionary<int, float>()
+        bonusAppearanceWeight = new Dictionary<int, float>()
         {
-            { 0, 19f },    // 0은 포함될 확률이 x%
-            { 1, 19f },    // 1은 포함될 확률이 y%
-            { 2, 19f },    
-            { 3, 19f },    
-            { 4, 19f },    
-            { 5, 1f },     
-            { 6, 1f },     
-            { 7, 1f },     
-            { 8, 1f },     
-            { 9, 1f },     
+            { 0, 1 },    // 0은 포함될 확률이 x%
+            { 1, 1 },    // 1은 포함될 확률이 y%
+            { 2, 1 },    
+            { 3, 1 },    
+            { 4, 1 },    
+            { 5, 19f },     
+            { 6, 19f },     
+            { 7, 19f },     
+            { 8, 19f },     
+            { 9, 19f },     
         };
 
-        // 무작위 쌍을 100,000번 생성하여 테스트합니다.
+        // 무작위 쌍을 100,000번 생성하여 실제 확률과 일치하는지 테스트.
         //TestProbabilities(100000);
     }
 
@@ -143,7 +144,7 @@ public class HUDManager : MonoBehaviour
         }
 
         // 3. 랜덤한 X(temp : 2)개는 선택 및 보이게
-        Vector2Int pair = GetRandomPair(probabilities);
+        Vector2Int pair = GetRandomPair(bonusAppearanceWeight);
 
         for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
         {
@@ -167,7 +168,7 @@ public class HUDManager : MonoBehaviour
         // 테스트 횟수만큼 무작위 쌍을 생성하고 각 숫자 등장 횟수를 계산
         for (int i = 0; i < testCount; i++)
         {
-            Vector2Int pair = GetRandomPair(probabilities);
+            Vector2Int pair = GetRandomPair(bonusAppearanceWeight);
             numberCounts[pair.x]++;
             numberCounts[pair.y]++;
         }
@@ -374,27 +375,27 @@ public class HUDManager : MonoBehaviour
 
     void BonusPenetraionUp()
     {
-
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PenetrationUp());
     }
+
     void BonusProjectileUp()
     {
-
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.ProjectileUp());
     }
-    void BonusNothing()
-    {
 
-    }
     void BonusHPAutoRecover()
     {
-
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HPAutoRecover());
     }
+
     void BonusCoinDropUp()
     {
-
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.CoinDropUp());
     }
+
     void BonusHiddenTower()
     {
-
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HiddenTowerSpawn());
     }
 
     // 현재 경험치와 최대 경험치를 사용해 게이지 바를 업데이트하는 함수

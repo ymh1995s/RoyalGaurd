@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
-// TODO : 모든 스크립트에서 public 삭제
+// TODO : 모든 스크립트에서 public 참조 자제
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -95,10 +95,15 @@ public class GameManager : MonoBehaviour
 
         // Projectile
         BaseProjectile.attackPowerUp = 0;
+        BaseProjectile.maxPenetration = 1;
 
         // BaseWeapon
         BaseWeapon.fireRateMmul = 1.0f;
         BaseWeapon.detectionRadiusPlus = 0f;  // 무기의 탐지 반경
+        BaseWeapon.fireMultiple = 1; // 1회 발사 당 투사체
+
+        // Monster
+        BaseMonster.coinClassRangeCut = new int[3] { 70, 97, 100 };
     }
 
     private void FindPlayer()

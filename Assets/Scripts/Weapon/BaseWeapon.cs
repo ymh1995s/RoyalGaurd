@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 // HIT & FLASH
 // 투사체 고르기
@@ -21,12 +22,14 @@ public abstract class BaseWeapon : MonoBehaviour
     protected float bulletSpeed = 8f;  // 총알 속도
     protected float fireCountdown = 0f;// 발사 간격을 체크하기 위한 카운트다운 변수
     protected float fireRate; // 발사 간격을 초 단위로 설정 (X초에 한 번 발사)
-    protected float[] fireRates = { 1f, 0.6f, 0.4f };
+    protected float[] fireRates = { 1f, 0.8f, 0.6f };
     static public float fireRateMmul = 1.0f;
+    static public int fireMultiple = 1;
+    float fireMultipleInterval = 0.2f;
 
     // 탐지 영역
     public float detectionRadius;  // 무기의 탐지 반경
-    protected float[] detectionRadius_ = { 4f, 5f, 6f };
+    protected float[] detectionRadius_ = { 4f, 6f, 8f };
     static public float detectionRadiusPlus = 0f;
     protected LayerMask enemyLayer;           // 적 레이어
     protected Collider2D enemyCollider;       // 적 콜라이더
@@ -114,28 +117,46 @@ public abstract class BaseWeapon : MonoBehaviour
 
             if (fireCountdown <= 0f)
             {
-                GameObject bulletGO = Instantiate(bulletPrefab, transform.position, transform.rotation);
-
-                // 총알의 Z축 위치를 조정하여 Grid보다 앞에 배치
-                Vector3 bulletPosition = bulletGO.transform.position;
-                bulletPosition.z = -3; // 필요에 따라 조정
-                bulletGO.transform.position = bulletPosition;
-
-                Rigidbody2D rb = bulletGO.GetComponent<Rigidbody2D>();
-
-                // 방향을 계산할 때 Y축에 약간의 상향 오프셋 추가
-                Vector3 offset = new Vector3(0, 0.5f, 0); // Y축으로 0.5만큼 오프셋, 필요에 따라 조정
-                Vector3 direction = (target.position + offset - transform.position).normalized;
-
-                // 랜덤한 오차를 추가하기 위해 방향 벡터에 회전을 적용
-                float angleVariance = 5.0f; // 오차 각도 범위 (각도)
-                float randomAngle = Random.Range(-angleVariance, angleVariance);
-                direction = Quaternion.Euler(0, 0, randomAngle) * direction;
-
-                rb.velocity = direction * bulletSpeed;
-
-                fireCountdown = fireRate * fireRateMmul;
+                // FireMultipleTimes 코루틴을 시작하고, fireCountdown을 바로 갱신
+                Transform thistarget = target;
+                StartCoroutine(FireMultipleTimes(thistarget));
+                fireCountdown = fireRate * fireRateMmul; // fireCountdown 갱신
             }
+        }
+    }
+
+    // TODO 함수명 재정립
+    void RealFire(Transform thisTarget)
+    {
+        GameObject bulletGO = Instantiate(bulletPrefab, transform.position, transform.rotation);
+
+        // 총알의 Z축 위치를 조정하여 Grid보다 앞에 배치 (랜더링이 되도록)
+        Vector3 bulletPosition = bulletGO.transform.position;
+        bulletPosition.z = -3; // 필요에 따라 조정
+        bulletGO.transform.position = bulletPosition;
+
+        Rigidbody2D rb = bulletGO.GetComponent<Rigidbody2D>();
+
+        // 방향을 계산할 때 Y축에 약간의 상향 오프셋 추가
+        Vector3 offset = new Vector3(0, 0.5f, 0); // Y축으로 0.5만큼 오프셋, 필요에 따라 조정
+        Vector3 direction = (thisTarget.position + offset - transform.position).normalized;
+
+        // 랜덤한 오차를 추가하기 위해 방향 벡터에 회전을 적용
+        float angleVariance = 5.0f; // 오차 각도 범위 (각도)
+        float randomAngle = Random.Range(-angleVariance, angleVariance);
+        direction = Quaternion.Euler(0, 0, randomAngle) * direction;
+
+        rb.velocity = direction * bulletSpeed;
+    }
+
+    private IEnumerator FireMultipleTimes(Transform thisTarget)
+    {
+        for (int i = 0; i < fireMultiple; i++)
+        {
+            RealFire(thisTarget);
+
+            // 다음 발사 전까지 대기 (0.1초)
+            yield return new WaitForSeconds(fireMultipleInterval * fireRateMmul);
         }
     }
 

@@ -21,7 +21,8 @@ public class BaseProjectile : MonoBehaviour
     protected int[] master_attackPower = { 10,15,18 };
 
     // 관통 스텟 영역
-    private int penetration = 1; // 투사체의 관통력 (관통할 수 있는 적의 수)
+    public static int maxPenetration = 1; // 투사체의 관통력 (관통할 수 있는 적의 수)
+    int currentpenetration;
 
     // 이펙트 영역
     protected GameObject hit;  // 충돌 효과 오브젝트
@@ -47,6 +48,9 @@ public class BaseProjectile : MonoBehaviour
 
     protected virtual void Start()
     {
+        // 관통 할 수 있는 적의 수
+        currentpenetration = maxPenetration;
+
         rb = GetComponent<Rigidbody2D>();
         if (flash != null)
         {
@@ -102,6 +106,6 @@ public class BaseProjectile : MonoBehaviour
 
     public void CheckDestroy()
     {
-        if (--penetration <= 0) Destroy();
+        if (--currentpenetration <= 0) Destroy();
     }
 }
