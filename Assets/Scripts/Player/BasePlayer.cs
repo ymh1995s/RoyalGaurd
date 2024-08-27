@@ -26,7 +26,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
     public float moveSpeed = 2.0f;
     public int maxHP = 20;
     public int currentHP = 20;
-    int hpAutoRecoverInterval = 10;
+    int hpAutoRecoverInterval = 5;
     public bool isObtainedAutoRecover = false;
 
     //무기 관리
