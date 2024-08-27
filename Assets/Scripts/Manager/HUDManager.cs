@@ -70,6 +70,9 @@ public class HUDManager : MonoBehaviour
     private List<Vector2Int> bonusAllPairs;
     Dictionary<int, float> bonusAppearanceWeight;
 
+    // 하위 스크립트 로드
+    private HUDLevelUpHelper levelUpHelper;
+
     private void Awake()
     {
         HUDObjectSet();
@@ -77,26 +80,8 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeButtons(); // 버튼 초기화
-        GenerateAllPairs();  //보너스 능력 배열을 미리 세팅
-
-        // 각 숫자에 대한 포함 확률을 설정합니다.
-        bonusAppearanceWeight = new Dictionary<int, float>()
-        {
-            { 0, 18 },    // 0은 포함될 확률이 x%
-            { 1, 18 },    // 1은 포함될 확률이 y%
-            { 2, 18 },    
-            { 3, 18 },    
-            { 4, 18 },    
-            { 5, 2 },     
-            { 6, 2 },     
-            { 7, 2 },     
-            { 8, 2 },     
-            { 9, 2 },     
-        };
-
-        // 무작위 쌍을 100,000번 생성하여 실제 확률과 일치하는지 테스트.
-        //TestProbabilities(100000);
+        InitializeButtons(); // 버튼 초기화    
+        levelUpHelper = new HUDLevelUpHelper(BonusLevelUpButtonGroup, BonusLevelUpButtonArr);
     }
 
     public void InitializeButtons()
@@ -132,122 +117,12 @@ public class HUDManager : MonoBehaviour
 
     public void BonusLevelUp()
     {
-        // 0. 게임 스탑
-        tempTimeScale = Time.timeScale;
-        Time.timeScale = 0;
-
-        // 1. 버튼 이미지를 보이게한다.
-        BonusLevelUpButtonGroup.SetActive(true);
-
-        // 2. 하위 버튼을 모두 가림
-        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
-        {
-            BonusLevelUpButtonArr[i].gameObject.SetActive(false);
-        }
-
-        // 3. 랜덤한 X(temp : 2)개는 선택 및 보이게
-        Vector2Int pair = GetRandomPair(bonusAppearanceWeight);
-
-        for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
-        {
-            if (i == pair.x || i == pair.y)
-            {
-                BonusLevelUpButtonArr[i].gameObject.SetActive(true);
-            }
-        }
+        levelUpHelper.BonusLevelUp();
     }
 
-    public void TestProbabilities(int testCount)
+    public void ApplyBonus(Action levelUpAction)
     {
-        Dictionary<int, int> numberCounts = new Dictionary<int, int>();
-
-        // 숫자 카운트 초기화
-        for (int i = 0; i <= 9; i++)
-        {
-            numberCounts[i] = 0;
-        }
-
-        // 테스트 횟수만큼 무작위 쌍을 생성하고 각 숫자 등장 횟수를 계산
-        for (int i = 0; i < testCount; i++)
-        {
-            Vector2Int pair = GetRandomPair(bonusAppearanceWeight);
-            numberCounts[pair.x]++;
-            numberCounts[pair.y]++;
-        }
-
-        // 결과 출력
-        Debug.Log("Number Appearance Counts:");
-        foreach (var kvp in numberCounts)
-        {
-            float appearanceRate = (float)kvp.Value / (testCount * 2) * 100f;
-            Debug.Log($"Number {kvp.Key}: {kvp.Value} times, Appeared in {appearanceRate}% of pairs");
-        }
-    }
-
-    // 특정 숫자가 선택된 경우, 해당 숫자를 포함하는 모든 쌍을 제외합니다.
-    public void ExcludePairsContaining(int number)
-    {
-        bonusAllPairs.RemoveAll(pair => pair.x == number || pair.y == number);
-    }
-
-    // 모든 가능한 쌍을 생성합니다.
-    private void GenerateAllPairs()
-    {
-        bonusAllPairs = new List<Vector2Int>();
-
-        for (int i = 0; i <= 9; i++)
-        {
-            for (int j = i + 1; j <= 9; j++)
-            {
-                bonusAllPairs.Add(new Vector2Int(i, j));
-            }
-        }
-    }
-
-    public Vector2Int GetRandomPair(Dictionary<int, float> probabilities)
-    {
-        if (bonusAllPairs.Count == 0)
-        {
-            Debug.LogWarning("No more pairs available!");
-            return new Vector2Int(-1, -1); // 예외 처리
-        }
-
-        // 각 쌍에 대한 가중치를 계산합니다.
-        List<float> weights = new List<float>();
-        foreach (var pair in bonusAllPairs)
-        {
-            float weight = 1.0f;
-
-            if (probabilities.ContainsKey(pair.x))
-                weight *= probabilities[pair.x];
-
-            if (probabilities.ContainsKey(pair.y))
-                weight *= probabilities[pair.y];
-
-            weights.Add(weight);
-        }
-
-        // 가중치 기반으로 랜덤한 쌍을 선택합니다.
-        float totalWeight = 0f;
-        foreach (var weight in weights)
-        {
-            totalWeight += weight;
-        }
-
-        float randomWeightPoint = UnityEngine.Random.Range(0, totalWeight);
-        float cumulativeWeight = 0f;
-
-        for (int i = 0; i < bonusAllPairs.Count; i++)
-        {
-            cumulativeWeight += weights[i];
-            if (randomWeightPoint <= cumulativeWeight)
-            {
-                return bonusAllPairs[i];
-            }
-        }
-
-        // 예외 처리 (이 코드에 도달하지 않아야 함)
-        return bonusAllPairs[0];
+        levelUpHelper.ApplyBonus(levelUpAction);
     }
 
     void DebugButtonInit()
@@ -326,6 +201,7 @@ public class HUDManager : MonoBehaviour
             return;
         }
 
+
         // 버튼 배열 초기화
         for (int i = 0; i < buttonDir.Length; i++)
         {
@@ -347,22 +223,6 @@ public class HUDManager : MonoBehaviour
             }
         }
     }
-
-    void ApplyBonus(Action levelUpAction)
-    {
-        // 레벨업 기능 적용
-        levelUpAction();
-
-        // 모든 보너스 버튼 비활성화
-        foreach (var button in BonusLevelUpButtonArr)
-        {
-            button.gameObject.SetActive(false);
-        }
-
-        // 시간 스케일을 원래대로 복원
-        Time.timeScale = tempTimeScale;
-    }
-
 
     void BonusPowerUp()
     {
@@ -394,31 +254,31 @@ public class HUDManager : MonoBehaviour
     void BonusPenetraionUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PenetrationUp());
-        ExcludePairsContaining(5);
+        levelUpHelper.ExcludePairsContaining(5);
     }
 
     void BonusProjectileUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.ProjectileUp());
-        ExcludePairsContaining(6);
+        levelUpHelper.ExcludePairsContaining(6);
     }
 
     void BonusHPAutoRecover()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HPAutoRecover());
-        ExcludePairsContaining(7);
+        levelUpHelper.ExcludePairsContaining(7);
     }
 
     void BonusCoinDropUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.CoinDropUp());
-        ExcludePairsContaining(8);
+        levelUpHelper.ExcludePairsContaining(8);
     }
 
     void BonusHiddenTower()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HiddenTowerSpawn());
-        ExcludePairsContaining(9);
+        levelUpHelper.ExcludePairsContaining(9);
     }
 
     // 현재 경험치와 최대 경험치를 사용해 게이지 바를 업데이트하는 함수
