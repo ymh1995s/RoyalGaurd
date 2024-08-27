@@ -32,26 +32,26 @@ public class HUDLevelUpHelper
     {
         bonusAppearanceWeight = new Dictionary<int, float>()
         {
-            //{ 0, 18 },    // 0은 포함될 확률이 x%
-            //{ 1, 18 },    // 1은 포함될 확률이 y%
-            //{ 2, 18 },
-            //{ 3, 18 },
-            //{ 4, 18 },
-            //{ 5, 2 },
-            //{ 6, 2 },
-            //{ 7, 2 },
-            //{ 8, 2 },
-            //{ 9, 2 }
-            { 0, 1 },
-            { 1, 1 },
-            { 2, 1 },
-            { 3, 1 },
-            { 4, 1 },
-            { 5, 19 },
-            { 6, 19 },
-            { 7, 19 },
-            { 8, 19 },
-            { 9, 19 }
+            { 0, 18 },    // 0은 포함될 확률이 x%
+            { 1, 18 },    // 1은 포함될 확률이 y%
+            { 2, 18 },
+            { 3, 18 },
+            { 4, 18 },
+            { 5, 2 },
+            { 6, 2 },
+            { 7, 2 },
+            { 8, 2 },
+            { 9, 2 }
+            //{ 0, 1 }, // 테스트용
+            //{ 1, 1 },
+            //{ 2, 1 },
+            //{ 3, 1 },
+            //{ 4, 1 },
+            //{ 5, 19 },
+            //{ 6, 19 },
+            //{ 7, 19 },
+            //{ 8, 19 },
+            //{ 9, 19 }
         };
     }
 
@@ -156,6 +156,62 @@ public class HUDLevelUpHelper
 
         // 게임 재생 속도 원위치
         Time.timeScale = tempTimeScale;
+    }
+
+    public void BonusPowerUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackPowerUp(2));
+    }
+
+    public void BonusAttackSpeedUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackSpeedUp(0.98f));
+    }
+
+    public void BonusRangeUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponRangedUp(0.2f));
+    }
+
+    public void BonusHPUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerHPUp(GameManager.Instance.player, 0));
+    }
+
+    public void BonusMoveSpeedUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(GameManager.Instance.player, 0.2f));
+    }
+
+    // TODO : 5~9는 ENUM 관리
+    public void BonusPenetraionUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PenetrationUp());
+        ExcludePairsContaining(5);
+    }
+
+    public void BonusProjectileUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.ProjectileUp());
+        ExcludePairsContaining(6);
+    }
+
+    public void BonusHPAutoRecover()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HPAutoRecover());
+        ExcludePairsContaining(7);
+    }
+
+    public void BonusCoinDropUp()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.CoinDropUp());
+        ExcludePairsContaining(8);
+    }
+
+    public void BonusHiddenTower()
+    {
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HiddenTowerSpawn());
+        ExcludePairsContaining(9);
     }
 
     public void ExcludePairsContaining(int number)

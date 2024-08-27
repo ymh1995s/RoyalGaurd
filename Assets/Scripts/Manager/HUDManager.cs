@@ -81,7 +81,6 @@ public class HUDManager : MonoBehaviour
     private void Start()
     {
         InitializeButtons(); // 버튼 초기화    
-        levelUpHelper = new HUDLevelUpHelper(BonusLevelUpButtonGroup, BonusLevelUpButtonArr);
     }
 
     public void InitializeButtons()
@@ -118,11 +117,6 @@ public class HUDManager : MonoBehaviour
     public void BonusLevelUp()
     {
         levelUpHelper.BonusLevelUp();
-    }
-
-    public void ApplyBonus(Action levelUpAction)
-    {
-        levelUpHelper.ApplyBonus(levelUpAction);
     }
 
     void DebugButtonInit()
@@ -174,18 +168,21 @@ public class HUDManager : MonoBehaviour
             BonusLevelUpButton10,
         };
 
+        // TODO : Init 순서상 여기 배치했지만 생성자의 위치 검토
+        levelUpHelper = new HUDLevelUpHelper(BonusLevelUpButtonGroup, BonusLevelUpButtonArr);
+
         Action[] bonusActions = new Action[]
         {
-            BonusPowerUp,
-            BonusAttackSpeedUp,
-            BonusRangeUp,
-            BonusHPUp,
-            BonusMoveSpeedUp,
-            BonusPenetraionUp,
-            BonusProjectileUp,
-            BonusHPAutoRecover,
-            BonusCoinDropUp,
-            BonusHiddenTower,
+            levelUpHelper.BonusPowerUp,
+            levelUpHelper.BonusAttackSpeedUp,
+            levelUpHelper.BonusRangeUp,
+            levelUpHelper.BonusHPUp,
+            levelUpHelper.BonusMoveSpeedUp,
+            levelUpHelper.BonusPenetraionUp,
+            levelUpHelper.BonusProjectileUp,
+            levelUpHelper.BonusHPAutoRecover,
+            levelUpHelper.BonusCoinDropUp,
+            levelUpHelper.BonusHiddenTower,
         };
 
         InitializeButtons(BonusLevelUpButtonArr, bonusLevelupDir, bonusActions, "Bonus");
@@ -200,7 +197,6 @@ public class HUDManager : MonoBehaviour
             Debug.LogError($"{errorMessagePrefix} Button array and action array lengths do not match.");
             return;
         }
-
 
         // 버튼 배열 초기화
         for (int i = 0; i < buttonDir.Length; i++)
@@ -222,63 +218,6 @@ public class HUDManager : MonoBehaviour
                 Debug.LogError($"{errorMessagePrefix} {buttonDir[i]}에 해당하는 버튼이 할당되지 않았습니다.");
             }
         }
-    }
-
-    void BonusPowerUp()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackPowerUp(2));
-    }
-
-    void BonusAttackSpeedUp()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackSpeedUp(0.98f));
-    }
-
-    void BonusRangeUp()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponRangedUp(0.2f));
-    }
-
-    void BonusHPUp()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerHPUp(GameManager.Instance.player, 0));
-    }
-
-    void BonusMoveSpeedUp()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(GameManager.Instance.player, 0.2f));
-    }
-
-    // TODO : 5~9는 ENUM 관리
-
-    void BonusPenetraionUp()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PenetrationUp());
-        levelUpHelper.ExcludePairsContaining(5);
-    }
-
-    void BonusProjectileUp()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.ProjectileUp());
-        levelUpHelper.ExcludePairsContaining(6);
-    }
-
-    void BonusHPAutoRecover()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HPAutoRecover());
-        levelUpHelper.ExcludePairsContaining(7);
-    }
-
-    void BonusCoinDropUp()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.CoinDropUp());
-        levelUpHelper.ExcludePairsContaining(8);
-    }
-
-    void BonusHiddenTower()
-    {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HiddenTowerSpawn());
-        levelUpHelper.ExcludePairsContaining(9);
     }
 
     // 현재 경험치와 최대 경험치를 사용해 게이지 바를 업데이트하는 함수
