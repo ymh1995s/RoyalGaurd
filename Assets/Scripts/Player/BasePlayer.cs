@@ -16,7 +16,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
     private Animator animator;
 
     // 코드 분산용 레밸업 헬퍼
-    public TmpLevelUpHelper levelUpHelper;
+    public LevelUpHelper levelUpHelper;
 
     //스텟 영역
     //static public float moveSpeed = 2.0f;
@@ -67,7 +67,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         // 하위 스크립트 로드
         itemcollector = new ItemCollector();
         gatcha = new Gatcha();
-        levelUpHelper = new TmpLevelUpHelper();
+        levelUpHelper = new LevelUpHelper();
 
         // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
         animator = transform.Find("UnitRoot").GetComponent<Animator>();
@@ -190,7 +190,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         LevelUp();
 
         // 디버그 단에서 조건 삭제
-        if (playerLv % 10 == 0)
+        //if (playerLv % 10 == 0)
         {
             BonusLevelUp();
         }
@@ -215,31 +215,6 @@ public class BasePlayer : MonoBehaviour, IDamageable
             }
         }
     }
-
-    //TODO : 업그레이드 관련 다 Helper쪽으로 빼기
-    //void WeaponAdd()
-    //{
-        //for (int i = 0; i < maxWeaponCount; i++)
-        //{
-        //    if (obtainedWeapon[i] == null)
-        //    {
-        //        GameObject weapon;
-
-        //        int index = UnityEngine.Random.Range(1, 101); //1부터 101
-
-        //        if (index < weaponAddClassCut[0]) weapon = Instantiate(weaponPrefab[0], transform.position, Quaternion.identity);
-        //        else if (index < weaponAddClassCut[1]) weapon = Instantiate(weaponPrefab[1], transform.position, Quaternion.identity);
-        //        else weapon = Instantiate(weaponPrefab[2], transform.position, Quaternion.identity);
-
-        //        weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
-
-        //        obtainedWeapon[i] = weapon;
-        //        WeaponSort();
-        //        GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
-        //        return;
-        //    }
-        //}
-    //}
 
     void LevelUp()
     {

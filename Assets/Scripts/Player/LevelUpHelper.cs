@@ -1,65 +1,115 @@
-//using UnityEngine;
+using System;
+using UnityEngine;
 
-//public static class LevelUpHelper
-//{
-//    static void WeaponUpgrade(int index)
-//    {
-//        //TODO 플레이어에 있는거 여기로 빼오기
-//    }
+public class LevelUpHelper
+{
+    //TODO : 레밸업 인자들을 함수 파라미터 말고 배열이라던가 해서 관리해야겠다.
 
-//    static public void WeaponAttackPowerUp(int value = 2 )
-//    {
-//        BaseProjectile.attackPowerUp += value;
-//        GameManager.Instance.hudManager.LevelUpHintUpdate("공격력 증가!");
-//    }
+    public void WeaponAdd(BasePlayer player, Transform parentTransform)
+    {
+        for (int i = 0; i < player.maxWeaponCount; i++)
+        {
+            if (player.obtainedWeapon[i] == null)
+            {
+                GameObject weapon;
+                int index = UnityEngine.Random.Range(1, 101); // 1부터 101
 
-//    static public void WeaponAttackSpeedUp(float value = 0.97f)
-//    {
-//        BaseWeapon.fireRateMmul *= value;
-//        GameManager.Instance.hudManager.LevelUpHintUpdate("무기 공격 속도 증가!");
-//    }
+                if (index < player.weaponAddClassCut[0])
+                    weapon = GameObject.Instantiate(player.weaponPrefab[0], parentTransform.position, Quaternion.identity);
+                else if (index < player.weaponAddClassCut[1])
+                    weapon = GameObject.Instantiate(player.weaponPrefab[1], parentTransform.position, Quaternion.identity);
+                else
+                    weapon = GameObject.Instantiate(player.weaponPrefab[2], parentTransform.position, Quaternion.identity);
 
-//    static public void WeaponRangedUp(float value  = 0.15f)
-//    {
-//        BaseWeapon.detectionRadiusPlus += value;
-//        GameManager.Instance.hudManager.LevelUpHintUpdate("무기 사거리 증가!");
-//    }
+                weapon.transform.parent = parentTransform; // 전달된 Transform을 부모로 설정
 
-//    static public void TowerUpgrade(int index)
-//    {
-//        if (index == 0) TowerAttackSpeedUp();
-//        else if (index == 1) TowerRangeUp();
-//    }
+                player.obtainedWeapon[i] = weapon;
+                WeaponSort(player);
+                GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
+                return;
+            }
+        }
+    }
 
-//    static public void TowerAttackSpeedUp(float value = 0.95f)
-//    {
-//        BaseTower.fireRateMmul *= value;
-//        GameManager.Instance.hudManager.LevelUpHintUpdate("타워 공격 속도 증가!");
-//    }
+    public void WeaponSort(BasePlayer player)
+    {
+        GameObject[] weapons1 = GameObject.FindGameObjectsWithTag("LV1Weapon");
+        GameObject[] weapons2 = GameObject.FindGameObjectsWithTag("LV2Weapon");
+        GameObject[] weapons3 = GameObject.FindGameObjectsWithTag("LV3Weapon");
 
-//    static public void TowerRangeUp(float value = 0.2f)
-//    {
-//        BaseTower.detectionRadiusPlus += value;
-//        GameManager.Instance.hudManager.LevelUpHintUpdate("타워 사거리 증가!");
-//    }
+        int weaponCount = weapons1.Length + weapons2.Length + weapons3.Length;
 
-//    static public void PlayerUpgrade(int index)
-//    {
-//        if (index == 0)  PlayerHPUp(); 
-//        else if (index == 1)  PlayerSpeedUp();
-//    }
+        try
+        {
+            int rad = 360 / weaponCount;
 
-//    static public void PlayerHPUp(int value = 1)
-//    {
-//        BasePlayer.maxHP += value;
-//        BasePlayer.currentHP = BasePlayer.maxHP;
-//        GameManager.Instance.hudManager.LevelUpHintUpdate("플레이어 체력 증가!");
-//        GameManager.Instance.player.UpdateHealthBar();
-//    }
+            for (int i = 0; i < weaponCount; i++)
+            {
+                BaseWeapon bweapon = player.obtainedWeapon[i].GetComponent<BaseWeapon>();
+                bweapon.currentAngle = rad * i;
+            }
+        }
 
-//    static public void PlayerSpeedUp(float value =0.2f)
-//    {
-//        BasePlayer.moveSpeed += value;
-//        GameManager.Instance.hudManager.LevelUpHintUpdate("플레이어 이동속도 증가!");
-//    }
-//}
+        catch (Exception ex)
+        {
+            Debug.LogError("sort err");
+            Debug.LogError(ex.ToString());
+        }
+    }
+
+    public void WeaponAttackPowerUp(int value = 1)
+    {
+        BaseProjectile.attackPowerUp += value;
+        GameManager.Instance.hudManager.LevelUpHintUpdate("공격력 증가!");
+    }
+
+    public void WeaponAttackSpeedUp(float value = 0.98f)
+    {
+        BaseWeapon.fireRateMmul *= value;
+        GameManager.Instance.hudManager.LevelUpHintUpdate("무기 공격 속도 증가!");
+    }
+
+    public void WeaponRangedUp(float value = 0.15f)
+    {
+        BaseWeapon.detectionRadiusPlus += value;
+        GameManager.Instance.hudManager.LevelUpHintUpdate("무기 사거리 증가!");
+    }
+
+    public void TowerUpgrade(int index)
+    {
+        if (index == 0) TowerAttackSpeedUp();
+        else if (index == 1) TowerRangeUp();
+    }
+
+    public void TowerAttackSpeedUp(float value = 0.96f)
+    {
+        BaseTower.fireRateMmul *= value;
+        GameManager.Instance.hudManager.LevelUpHintUpdate("타워 공격 속도 증가!");
+    }
+
+    public void TowerRangeUp(float value = 0.2f)
+    {
+        BaseTower.detectionRadiusPlus += value;
+        GameManager.Instance.hudManager.LevelUpHintUpdate("타워 사거리 증가!");
+    }
+
+    public void PlayerUpgrade(BasePlayer player, int index)
+    {
+        if (index == 0) PlayerHPUp(player);
+        else if (index == 1) PlayerSpeedUp(player);
+    }
+
+    public void PlayerHPUp(BasePlayer player, int value = 1)
+    {
+        player.maxHP += value;
+        player.currentHP = player.maxHP;
+        GameManager.Instance.hudManager.LevelUpHintUpdate("플레이어 체력 증가!");
+        GameManager.Instance.player.UpdateHealthBar();
+    }
+
+    public void PlayerSpeedUp(BasePlayer player, float value = 0.2f)
+    {
+        player.moveSpeed += value;
+        GameManager.Instance.hudManager.LevelUpHintUpdate("플레이어 이동속도 증가!");
+    }
+}

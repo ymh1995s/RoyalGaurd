@@ -262,7 +262,8 @@ public class BaseMonster : MonoBehaviour
             if (projectile != null)
             {
                 TakeDamage(projectile.attackPower);
-                projectile.Destroy();
+                //projectile.Destroy();
+                projectile.CheckDestroy();
             }
         }
         else if (collision.CompareTag("Player") || collision.CompareTag("Tower") || collision.CompareTag("CommandCenter"))

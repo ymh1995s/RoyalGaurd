@@ -7,6 +7,7 @@ using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
 public class HUDManager : MonoBehaviour
 {
     // TODO : 컴포넌트 배열 등으로 그룹 관리하기
+    // TODO : HUD 스크립트가 무거워 지려고 하니 분리할 것
 
     //스텟 영역
     private Text lvText;
@@ -21,12 +22,16 @@ public class HUDManager : MonoBehaviour
 
     // TODO 숫자 하드 코딩 말고 네이밍으로 바꿔야됨
     // 아닌가 나중에 다른 능력으로 바꿀거라 임시로는 괜찮은가
-    public Button BunusLevelUpButton1;
-    public Button BunusLevelUpButton2;
-    public Button BunusLevelUpButton3;
-    public Button BunusLevelUpButton4;
-    public Button BunusLevelUpButton5;
-    public Button BunusLevelUpButton6;
+    public Button BonusLevelUpButton1;
+    public Button BonusLevelUpButton2;
+    public Button BonusLevelUpButton3;
+    public Button BonusLevelUpButton4;
+    public Button BonusLevelUpButton5;
+    public Button BonusLevelUpButton6;
+    public Button BonusLevelUpButton7;
+    public Button BonusLevelUpButton8;
+    public Button BonusLevelUpButton9;
+    public Button BonusLevelUpButton10;
 
     // 보너스 레밸업 관려 전역 변수
     float tempTimeScale = 0f;
@@ -48,7 +53,7 @@ public class HUDManager : MonoBehaviour
     private RectTransform backgroundPanel; // 게이지 바 배경
     private RectTransform experienceBar; // 게이지 바
 
-    //레밸업 텍스트효과 (나타났다 사라지기)
+    // 레밸업 텍스트효과 (나타났다 사라지기)
     private float fadeDuration = 2f; // 텍스트가 서서히 사라지는 시간
     private float displayDuration = 2f; // 텍스트가 표시되는 시간
     private Coroutine fadeOutCoroutine; // 현재 실행 중인 페이드 아웃 코루틴을 추적
@@ -57,19 +62,38 @@ public class HUDManager : MonoBehaviour
     private string[] specTextDir = { "EXP/LVText", "MENU/UI/StatGroup/PlayerSpec", "MENU/UI/StatGroup/WeaponSpec", "MENU/UI/StatGroup/TowerSpec" };
     private string levelUpHintDir = "LevelUPText";
     private string bonusLevelupMsterDir = "LevelUpBonus";
-    private string[] bonusLevelupDir = { "LevelUpBonus/PowerUp", "LevelUpBonus/AttackSpeedUp", "LevelUpBonus/RangeUp", "LevelUpBonus/HPRecover", "LevelUpBonus/SpeedUp", "LevelUpBonus/TODO" };
+    private string[] bonusLevelupDir = { "LevelUpBonus/PowerUp", "LevelUpBonus/AttackSpeedUp", "LevelUpBonus/RangeUp", "LevelUpBonus/HPRecover", "LevelUpBonus/SpeedUp",
+        "LevelUpBonus/PenetrationUp","LevelUpBonus/ProjectileUp","LevelUpBonus/HPAutoRecover","LevelUpBonus/CoinDropUp","LevelUpBonus/HiddenTower"};
     private string[] debugBtnDir = { "MENU/DebugBTN/겜속도--", "MENU/DebugBTN/겜속도++", "MENU/마스터웨폰+", "MENU/마스터공업", "MENU/무기공속업", "MENU/무기레인지업", "MENU/타워공속업",
         "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트"};
-    private string[] expDir = { "EXP/BaseBar", "EXP/BaseBar/RealBar" };//나중에 변수명 지어주기
+    private string[] expDir = { "EXP/BaseBar", "EXP/BaseBar/RealBar" };
 
     private void Awake()
     {
         HUDObjectSet();
     }
-
+    Dictionary<int, float> probabilities;
     private void Start()
     {
         InitializeButtons(); // 버튼 초기화
+
+        // 각 숫자에 대한 포함 확률을 설정합니다.
+        probabilities = new Dictionary<int, float>()
+        {
+            { 0, 19f },    // 0은 포함될 확률이 x%
+            { 1, 19f },    // 1은 포함될 확률이 y%
+            { 2, 19f },    
+            { 3, 19f },    
+            { 4, 19f },    
+            { 5, 1f },     
+            { 6, 1f },     
+            { 7, 1f },     
+            { 8, 1f },     
+            { 9, 1f },     
+        };
+
+        // 무작위 쌍을 100,000번 생성하여 테스트합니다.
+        //TestProbabilities(100000);
     }
 
     public void InitializeButtons()
@@ -119,7 +143,7 @@ public class HUDManager : MonoBehaviour
         }
 
         // 3. 랜덤한 X(temp : 2)개는 선택 및 보이게
-        Vector2Int pair = GetRandomPair();
+        Vector2Int pair = GetRandomPair(probabilities);
 
         for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
         {
@@ -128,28 +152,85 @@ public class HUDManager : MonoBehaviour
                 BonusLevelUpButtonArr[i].gameObject.SetActive(true);
             }
         }
-
-        // TEMP : 마지막 임시 설명은 무조건 있게
-        BonusLevelUpButtonArr[BonusLevelUpButtonArr.Length - 1].gameObject.SetActive(true);
     }
 
-    public static Vector2Int GetRandomPair()
+    public void TestProbabilities(int testCount)
     {
-        // 가능한 모든 쌍을 생성합니다.
-        List<Vector2Int> pairs = new List<Vector2Int>();
+        Dictionary<int, int> numberCounts = new Dictionary<int, int>();
 
-        // TODO : 하드 코딩 제거
-        for (int i = 0; i <= 4; i++)
+        // 숫자 카운트 초기화
+        for (int i = 0; i <= 9; i++)
         {
-            for (int j = i + 1; j <= 4; j++)
+            numberCounts[i] = 0;
+        }
+
+        // 테스트 횟수만큼 무작위 쌍을 생성하고 각 숫자 등장 횟수를 계산
+        for (int i = 0; i < testCount; i++)
+        {
+            Vector2Int pair = GetRandomPair(probabilities);
+            numberCounts[pair.x]++;
+            numberCounts[pair.y]++;
+        }
+
+        // 결과 출력
+        Debug.Log("Number Appearance Counts:");
+        foreach (var kvp in numberCounts)
+        {
+            float appearanceRate = (float)kvp.Value / (testCount * 2) * 100f;
+            Debug.Log($"Number {kvp.Key}: {kvp.Value} times, Appeared in {appearanceRate}% of pairs");
+        }
+    }
+
+
+    public Vector2Int GetRandomPair(Dictionary<int, float> probabilities)
+    {
+        List<Vector2Int> allPairs = new List<Vector2Int>();
+
+        // 0부터 x까지의 모든 가능한 쌍을 생성합니다.
+        for (int i = 0; i <= bonusLevelupDir.Length-1; i++) //배열상 -1
+        {
+            for (int j = i + 1; j <= bonusLevelupDir.Length-1; j++)
             {
-                pairs.Add(new Vector2Int(i, j));
+                allPairs.Add(new Vector2Int(i, j));
             }
         }
 
-        // 무작위로 하나의 쌍을 선택합니다.
-        int index = UnityEngine.Random.Range(0, pairs.Count); // UnityEngine.Random을 사용하여 무작위 인덱스 선택
-        return pairs[index];
+        // 각 쌍에 대한 가중치를 계산합니다.
+        List<float> weights = new List<float>();
+        foreach (var pair in allPairs)
+        {
+            float weight = 1.0f;
+
+            if (probabilities.ContainsKey(pair.x))
+                weight *= probabilities[pair.x];
+
+            if (probabilities.ContainsKey(pair.y))
+                weight *= probabilities[pair.y];
+
+            weights.Add(weight);
+        }
+
+        // 가중치 기반으로 랜덤한 쌍을 선택합니다.
+        float totalWeight = 0f;
+        foreach (var weight in weights)
+        {
+            totalWeight += weight;
+        }
+
+        float randomWeightPoint = UnityEngine.Random.Range(0, totalWeight);
+        float cumulativeWeight = 0f;
+
+        for (int i = 0; i < allPairs.Count; i++)
+        {
+            cumulativeWeight += weights[i];
+            if (randomWeightPoint <= cumulativeWeight)
+            {
+                return allPairs[i];
+            }
+        }
+
+        // 예외 처리 (이 코드에 도달하지 않아야 함)
+        return allPairs[0];
     }
 
     void DebugButtonInit()
@@ -189,12 +270,16 @@ public class HUDManager : MonoBehaviour
     {
         BonusLevelUpButtonArr = new Button[]
         {
-            BunusLevelUpButton1,
-            BunusLevelUpButton2,
-            BunusLevelUpButton3,
-            BunusLevelUpButton4,
-            BunusLevelUpButton5,
-            BunusLevelUpButton6,
+            BonusLevelUpButton1,
+            BonusLevelUpButton2,
+            BonusLevelUpButton3,
+            BonusLevelUpButton4,
+            BonusLevelUpButton5,
+            BonusLevelUpButton6,
+            BonusLevelUpButton7,
+            BonusLevelUpButton8,
+            BonusLevelUpButton9,
+            BonusLevelUpButton10,
         };
 
         Action[] bonusActions = new Action[]
@@ -204,7 +289,11 @@ public class HUDManager : MonoBehaviour
             BonusRangeUp,
             BonusHPUp,
             BonusMoveSpeedUp,
-            BonusNothing,
+            BonusPenetraionUp,
+            BonusProjectileUp,
+            BonusHPAutoRecover,
+            BonusCoinDropUp,
+            BonusHiddenTower,
         };
 
         InitializeButtons(BonusLevelUpButtonArr, bonusLevelupDir, bonusActions, "Bonus");
@@ -260,17 +349,7 @@ public class HUDManager : MonoBehaviour
 
     void BonusPowerUp()
     {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackPowerUp(1));
-        //ApplyBonus(() => LevelUpHelper.WeaponAttackPowerUp(1));
-
-        //LevelUpHelper.WeaponAttackPowerUp(1);
-
-        //for (int i = 0; i < BonusLevelUpButtonArr.Length; i++)
-        //{
-        //    BonusLevelUpButtonArr[i].gameObject.SetActive(false);
-        //}
-
-        //Time.timeScale = tempTimeScale;
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackPowerUp(2));
     }
 
     void BonusAttackSpeedUp()
@@ -280,7 +359,7 @@ public class HUDManager : MonoBehaviour
 
     void BonusRangeUp()
     {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponRangedUp(0.1f));
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponRangedUp(0.2f));
     }
 
     void BonusHPUp()
@@ -290,10 +369,30 @@ public class HUDManager : MonoBehaviour
 
     void BonusMoveSpeedUp()
     {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(GameManager.Instance.player, 0.1f));
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(GameManager.Instance.player, 0.2f));
     }
 
+    void BonusPenetraionUp()
+    {
+
+    }
+    void BonusProjectileUp()
+    {
+
+    }
     void BonusNothing()
+    {
+
+    }
+    void BonusHPAutoRecover()
+    {
+
+    }
+    void BonusCoinDropUp()
+    {
+
+    }
+    void BonusHiddenTower()
     {
 
     }

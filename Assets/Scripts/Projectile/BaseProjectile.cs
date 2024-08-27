@@ -15,10 +15,13 @@ public class BaseProjectile : MonoBehaviour
     private Rigidbody2D rb;  // 2D 리지드바디
     private CircleCollider2D cc;  // circle collider
 
-    //스텟 영역
+    // 공격력 영역
     public int attackPower = 1;
     public static int attackPowerUp = 0;
     protected int[] master_attackPower = { 10,15,18 };
+
+    // 관통 스텟 영역
+    private int penetration = 1; // 투사체의 관통력 (관통할 수 있는 적의 수)
 
     // 이펙트 영역
     protected GameObject hit;  // 충돌 효과 오브젝트
@@ -34,6 +37,7 @@ public class BaseProjectile : MonoBehaviour
     //ETC
     Dictionary<string, int> dictionary = new Dictionary<string, int>();
     const int destorywait = 2;
+
     protected enum Level { LV1, LV2, LV3}
 
     //사용 보류
@@ -69,6 +73,9 @@ public class BaseProjectile : MonoBehaviour
     {
         var hitInstance = Instantiate(hit, transform.position, transform.rotation);
 
+        // 이펙트 크기를 x배로 설정
+        hitInstance.transform.localScale *= 1.2f;
+
         //Destroy hit effects depending on particle Duration time
         var hitPs = hitInstance.GetComponent<ParticleSystem>();
         if (hitPs != null)
@@ -91,5 +98,10 @@ public class BaseProjectile : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    public void CheckDestroy()
+    {
+        if (--penetration <= 0) Destroy();
     }
 }

@@ -17,6 +17,11 @@ public class GameManager : MonoBehaviour
         SetSingleton();
     }
 
+    private void Start()
+    {
+        Time.timeScale += 0.25f;
+    }
+
     void Update()
     {
         UpdateTimer(); // 매 프레임 시간 업데이트

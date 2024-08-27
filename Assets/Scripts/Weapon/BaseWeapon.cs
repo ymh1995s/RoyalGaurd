@@ -124,11 +124,17 @@ public abstract class BaseWeapon : MonoBehaviour
                 Rigidbody2D rb = bulletGO.GetComponent<Rigidbody2D>();
 
                 // 방향을 계산할 때 Y축에 약간의 상향 오프셋 추가
-                Vector3 offset = new Vector3(0, 0.5f, 0); // Y축으로 0.1만큼 오프셋, 필요에 따라 조정
-                Vector3 direction = ((target.position + offset) - transform.position).normalized;
+                Vector3 offset = new Vector3(0, 0.5f, 0); // Y축으로 0.5만큼 오프셋, 필요에 따라 조정
+                Vector3 direction = (target.position + offset - transform.position).normalized;
+
+                // 랜덤한 오차를 추가하기 위해 방향 벡터에 회전을 적용
+                float angleVariance = 5.0f; // 오차 각도 범위 (각도)
+                float randomAngle = Random.Range(-angleVariance, angleVariance);
+                direction = Quaternion.Euler(0, 0, randomAngle) * direction;
+
                 rb.velocity = direction * bulletSpeed;
 
-                fireCountdown = (fireRate * fireRateMmul);
+                fireCountdown = fireRate * fireRateMmul;
             }
         }
     }
