@@ -1,16 +1,10 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
 
-public class HUDLevelUpHelper : MonoBehaviour
+
+public class HUDLevelUpHelper
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

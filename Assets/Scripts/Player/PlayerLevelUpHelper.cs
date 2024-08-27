@@ -130,8 +130,7 @@ public class LevelUpHelper : MonoBehaviour
 
     public void CoinDropUp()
     {
-        //BaseMonster.coinClassRangeCut = new int[3] { 60, 95, 100 };
-        BaseMonster.coinClassRangeCut = new int[3] { 3, 50, 100 };
+        BaseMonster.coinClassRangeCut = new int[3] { 60, 95, 100 };
     }
 
     public void HiddenTowerSpawn()

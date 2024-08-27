@@ -26,7 +26,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
     public float moveSpeed = 2.0f;
     public int maxHP = 20;
     public int currentHP = 20;
-    int hpAutoRecoverInterval = 20;
+    int hpAutoRecoverInterval = 10;
     public bool isObtainedAutoRecover = false;
 
     //무기 관리
@@ -194,7 +194,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         LevelUp();
 
         // 디버그 단에서 조건 삭제
-        //if (playerLv % 10 == 0)
+        if (playerLv % 5 == 0)
         {
             BonusLevelUp();
         }

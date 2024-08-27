@@ -67,6 +67,7 @@ public class HUDManager : MonoBehaviour
     private string[] expDir = { "EXP/BaseBar", "EXP/BaseBar/RealBar" };
 
     // 보너스 버튼 등장 가중치
+    private List<Vector2Int> bonusAllPairs;
     Dictionary<int, float> bonusAppearanceWeight;
 
     private void Awake()
@@ -77,20 +78,21 @@ public class HUDManager : MonoBehaviour
     private void Start()
     {
         InitializeButtons(); // 버튼 초기화
+        GenerateAllPairs();  //보너스 능력 배열을 미리 세팅
 
         // 각 숫자에 대한 포함 확률을 설정합니다.
         bonusAppearanceWeight = new Dictionary<int, float>()
         {
-            { 0, 1 },    // 0은 포함될 확률이 x%
-            { 1, 1 },    // 1은 포함될 확률이 y%
-            { 2, 1 },    
-            { 3, 1 },    
-            { 4, 1 },    
-            { 5, 19f },     
-            { 6, 19f },     
-            { 7, 19f },     
-            { 8, 19f },     
-            { 9, 19f },     
+            { 0, 19 },    // 0은 포함될 확률이 x%
+            { 1, 19 },    // 1은 포함될 확률이 y%
+            { 2, 19 },    
+            { 3, 19 },    
+            { 4, 19 },    
+            { 5, 1 },     
+            { 6, 1 },     
+            { 7, 1 },     
+            { 8, 1 },     
+            { 9, 1 },     
         };
 
         // 무작위 쌍을 100,000번 생성하여 실제 확률과 일치하는지 테스트.
@@ -182,23 +184,37 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+    // 특정 숫자가 선택된 경우, 해당 숫자를 포함하는 모든 쌍을 제외합니다.
+    public void ExcludePairsContaining(int number)
+    {
+        bonusAllPairs.RemoveAll(pair => pair.x == number || pair.y == number);
+    }
+
+    // 모든 가능한 쌍을 생성합니다.
+    private void GenerateAllPairs()
+    {
+        bonusAllPairs = new List<Vector2Int>();
+
+        for (int i = 0; i <= 9; i++)
+        {
+            for (int j = i + 1; j <= 9; j++)
+            {
+                bonusAllPairs.Add(new Vector2Int(i, j));
+            }
+        }
+    }
 
     public Vector2Int GetRandomPair(Dictionary<int, float> probabilities)
     {
-        List<Vector2Int> allPairs = new List<Vector2Int>();
-
-        // 0부터 x까지의 모든 가능한 쌍을 생성합니다.
-        for (int i = 0; i <= bonusLevelupDir.Length-1; i++) //배열상 -1
+        if (bonusAllPairs.Count == 0)
         {
-            for (int j = i + 1; j <= bonusLevelupDir.Length-1; j++)
-            {
-                allPairs.Add(new Vector2Int(i, j));
-            }
+            Debug.LogWarning("No more pairs available!");
+            return new Vector2Int(-1, -1); // 예외 처리
         }
 
         // 각 쌍에 대한 가중치를 계산합니다.
         List<float> weights = new List<float>();
-        foreach (var pair in allPairs)
+        foreach (var pair in bonusAllPairs)
         {
             float weight = 1.0f;
 
@@ -221,17 +237,17 @@ public class HUDManager : MonoBehaviour
         float randomWeightPoint = UnityEngine.Random.Range(0, totalWeight);
         float cumulativeWeight = 0f;
 
-        for (int i = 0; i < allPairs.Count; i++)
+        for (int i = 0; i < bonusAllPairs.Count; i++)
         {
             cumulativeWeight += weights[i];
             if (randomWeightPoint <= cumulativeWeight)
             {
-                return allPairs[i];
+                return bonusAllPairs[i];
             }
         }
 
         // 예외 처리 (이 코드에 도달하지 않아야 함)
-        return allPairs[0];
+        return bonusAllPairs[0];
     }
 
     void DebugButtonInit()
@@ -373,29 +389,36 @@ public class HUDManager : MonoBehaviour
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(GameManager.Instance.player, 0.2f));
     }
 
+    // TODO : 5~9는 ENUM 관리
+
     void BonusPenetraionUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PenetrationUp());
+        ExcludePairsContaining(5);
     }
 
     void BonusProjectileUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.ProjectileUp());
+        ExcludePairsContaining(6);
     }
 
     void BonusHPAutoRecover()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HPAutoRecover());
+        ExcludePairsContaining(7);
     }
 
     void BonusCoinDropUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.CoinDropUp());
+        ExcludePairsContaining(8);
     }
 
     void BonusHiddenTower()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HiddenTowerSpawn());
+        ExcludePairsContaining(9);
     }
 
     // 현재 경험치와 최대 경험치를 사용해 게이지 바를 업데이트하는 함수
