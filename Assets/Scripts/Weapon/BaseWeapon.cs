@@ -75,10 +75,9 @@ public abstract class BaseWeapon : MonoBehaviour
         float radians = currentAngle * Mathf.Deg2Rad;
         Vector3 offset = new Vector3(Mathf.Cos(radians), Mathf.Sin(radians), 0) * orbitRadius;
 
-        // TODO
         // SPUM으로 넘어오면서 y오프셋 조정 임시 코드
         // 플레이어의 Y 축 중심 조정 (필요에 따라 Y 오프셋을 추가)
-        offset.y += 0.5f; // 필요하다면 yOffset을 통해 조정
+        //offset.y += 0.5f; // 필요하다면 yOffset을 통해 조정
 
         // 오브젝트의 위치를 플레이어 주위로 설정합니다.
         transform.position = playerPosition + offset;
@@ -137,9 +136,11 @@ public abstract class BaseWeapon : MonoBehaviour
 
         Rigidbody2D rb = bulletGO.GetComponent<Rigidbody2D>();
 
-        // 방향을 계산할 때 Y축에 약간의 상향 오프셋 추가
-        Vector3 offset = new Vector3(0, 0.5f, 0); // Y축으로 0.5만큼 오프셋, 필요에 따라 조정
-        Vector3 direction = (thisTarget.position + offset - transform.position).normalized;
+        // 수출용
+        //// 방향을 계산할 때 Y축에 약간의 상향 오프셋 추가
+        //Vector3 offset = new Vector3(0, 0.5f, 0); // Y축으로 0.5만큼 오프셋, 필요에 따라 조정
+        //Vector3 direction = (thisTarget.position + offset - transform.position).normalized;
+        Vector3 direction = (thisTarget.position - transform.position).normalized;
 
         // 랜덤한 오차를 추가하기 위해 방향 벡터에 회전을 적용
         float angleVariance = 5.0f; // 오차 각도 범위 (각도)

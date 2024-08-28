@@ -130,7 +130,7 @@ public class LevelUpHelper : MonoBehaviour
 
     public void CoinDropUp()
     {
-        BaseMonster.coinClassRangeCut = new int[3] { 60, 95, 100 };
+        BaseMonster.coinClassRangeCut = new int[3] { 55, 95, 100 };
     }
 
     public void HiddenTowerSpawn()
@@ -141,13 +141,14 @@ public class LevelUpHelper : MonoBehaviour
     void SpecialTowerSpawn()
     {
         // Resources 폴더에서 Tower 프리팹을 로드
-        GameObject towerPrefab = Resources.Load<GameObject>("tempSpecialTower");
+        GameObject towerPrefab = Resources.Load<GameObject>("SpecialTower");
 
         // 타워 프리팹이 제대로 로드되었는지 확인
         if (towerPrefab != null)
         {
             // 타워를 특정 좌표에 Instantiate
-            Vector3 position = new Vector3(-9.5f, 1.1f, 0f);
+            //Vector3 position = new Vector3(-9.5f, 1.1f, 0f); // 수출용
+            Vector3 position = new Vector3(-9.8f, 1.88f, 0f);
             Instantiate(towerPrefab, position, Quaternion.identity);
         }
         else

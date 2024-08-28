@@ -9,7 +9,7 @@ public class BossSpawner : MonoBehaviour
     void Start()
     {
         //StartCoroutine(SpawnObjectAfterDelay(600f));
-        StartCoroutine(SpawnObjectAfterDelay(6f));
+        StartCoroutine(SpawnObjectAfterDelay(600f));
     }
 
     IEnumerator SpawnObjectAfterDelay(float delay)

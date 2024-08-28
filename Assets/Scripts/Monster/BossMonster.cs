@@ -10,7 +10,7 @@ public class BossMonster : BaseMonster
     {
         base.Start();
  
-        animator.speed = 0.8f;
+        //animator.speed = 0.8f;
 
         hp = master_Hp[(int)Level.BOSS];
         speed = 0.5f;

@@ -5,12 +5,12 @@ using UnityEngine.UIElements;
 public class BaseTower : MonoBehaviour, IDamageable
 {
     //스텟 영역
-    private int maxHP = 50;
+    protected int maxHP = 50;
     [SerializeField] private int currentHp;
     [SerializeField] private int attackRange;
     [SerializeField] private int attackCoolTime;
     protected GameObject bulletPrefab; // 발사할 총알 프리팹
-    private float bulletSpeed = 5f;  // 총알 속도
+    protected float bulletSpeed = 5f;  // 총알 속도
     protected float fireRate = 1f; // 발사 간격을 초 단위로 설정 (X초에 한 번 발사)
     public static float fireRateMmul = 1.0f; // 공격 속도 업그레이드 곱셈 적용
     public static float detectionRadius = 10f;  // 타워의 탐지 반경
@@ -21,9 +21,9 @@ public class BaseTower : MonoBehaviour, IDamageable
     // 컴포넌트 영역
     BoxCollider2D collider;
 
-    //하위 오브젝트의 애니메이터
-    private Animator unitAnimator;
-    public float fireDelayTime = 0.5f;     // 애니메이션 진행 시간 후 총알 발사
+    //하위 오브젝트의 애니메이터 (수출용)
+    //private Animator unitAnimator;
+    //public float fireDelayTime = 0.5f;     // 애니메이션 진행 시간 후 총알 발사
 
     //체력바 영역
     private RectTransform healthBarForeground;
@@ -31,7 +31,7 @@ public class BaseTower : MonoBehaviour, IDamageable
 
     //탐지 영역
     private LayerMask enemyLayer;    // 적 레이어
-    Transform target;               // 타게팅된 적
+    protected Transform target;               // 타게팅된 적
 
     // 참조용 스트링 Arr
     protected string[] prefabNames = { "Projectile/Basic", "Projectile/ADVBasic", "Projectile/ICE", "Projectile/FIRE", "Projectile/Special2" }; // 사용할 프리팹 이름들
@@ -39,7 +39,7 @@ public class BaseTower : MonoBehaviour, IDamageable
     protected virtual void Start()
     {
         // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
-        unitAnimator = transform.Find("UnitRoot").GetComponent<Animator>();
+        //unitAnimator = transform.Find("UnitRoot").GetComponent<Animator>();
 
         collider = transform.GetComponent<BoxCollider2D>();
 
@@ -77,10 +77,13 @@ public class BaseTower : MonoBehaviour, IDamageable
 
     void Death()
     {
-        gameObject.layer = 0;
-        gameObject.tag = "Untagged";
-        unitAnimator.SetTrigger("Death");
-        Destroy(collider);
+        gameObject.SetActive(false);
+
+        // 수출용
+        //gameObject.layer = 0;
+        //gameObject.tag = "Untagged";
+        //unitAnimator.SetTrigger("Death");
+        //Destroy(collider);
         isAlive = false;
     }
 
@@ -130,13 +133,13 @@ public class BaseTower : MonoBehaviour, IDamageable
             if (fireCountdown <= 0f)
             {
                 fireCountdown = (fireRate * fireRateMmul);
-                unitAnimator.speed = (1.5f / fireRateMmul);
-                unitAnimator.SetTrigger("Attack");
+                //unitAnimator.speed = (1.5f / fireRateMmul);
+                //unitAnimator.SetTrigger("Attack");
                 StartCoroutine(FireAfterAnimation());
             }
             else
             {
-                unitAnimator.SetTrigger("Idle");
+                //unitAnimator.SetTrigger("Idle");
             }
         }
     }
@@ -144,7 +147,8 @@ public class BaseTower : MonoBehaviour, IDamageable
     private IEnumerator FireAfterAnimation()
     {
         // 애니메이션의 현재 시간을 기다린 후 총알 발사
-        yield return new WaitForSeconds(fireDelayTime * fireRateMmul);
+        //yield return new WaitForSeconds(fireDelayTime * fireRateMmul);
+        yield return new WaitForSeconds(fireRateMmul);
         if (target != null) Fire();
     }
 
@@ -174,7 +178,6 @@ public class BaseTower : MonoBehaviour, IDamageable
         // Rigidbody2D에 방향 속도 설정
         Rigidbody2D rb = bulletGO.GetComponent<Rigidbody2D>();
         rb.velocity = deviationDirection * bulletSpeed;
-
     }
 
     // 탐지반경 기즈모

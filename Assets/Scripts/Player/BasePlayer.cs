@@ -13,8 +13,8 @@ public class BasePlayer : MonoBehaviour, IDamageable
     public Vector2 minBounds; // 최소 경계
     public Vector2 maxBounds; // 최대 경계
 
-    //하위 오브젝트의 애니메이터
-    private Animator animator;
+    //하위 오브젝트의 애니메이터 (수출용)
+    //private Animator animator;
 
     // 코드 분산용 레밸업 헬퍼
     public LevelUpHelper levelUpHelper;
@@ -56,7 +56,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
     Gatcha gatcha;
 
     // 참조용 스트링 Arr
-    string[] weaponName = new string[3] { "Weapon/유튜브쟁이", "Weapon/치지직갈걸", "Weapon/숲에남을걸" };
+    string[] weaponName = new string[3] { "Weapon/유튜브쟁이", "Weapon/숲에남을걸", "Weapon/치지직갈걸" };
     string[] coinName = new string[3] { "Bronze(Clone)", "Silver(Clone)", "Gold(Clone)" };
     int[] coinExpQuantity = new int[3] { 1, 3, 10 };
     public int[] weaponAddClassCut = new int[3] { 60, 90, 100 };
@@ -73,7 +73,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         levelUpHelper = new LevelUpHelper();
 
         // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
-        animator = transform.Find("UnitRoot").GetComponent<Animator>();
+        //animator = transform.Find("UnitRoot").GetComponent<Animator>();
 
         // 무기 프리펩 로드
         weaponPrefab = new GameObject[weaponName.Length];
@@ -133,30 +133,32 @@ public class BasePlayer : MonoBehaviour, IDamageable
     {
         //TODO : 애니메이터 버그(움직였는데 Idle 모션) 픽스해야됨
         input = value.Get<Vector2>();
-        animator.Play("1_Run");
+        //animator.Play("1_Run");
         if (input.x < 0)
         {
             // 왼쪽으로 이동할 때 좌우 반전
             Vector3 scale = transform.localScale;
-            scale.x = 1; 
+            //scale.x = 1; 
+            spriteRenderer.flipX = false;
             transform.localScale = scale;
         }
         else if (input.x > 0)
         {
             // 오른쪽으로 이동할 때 좌우 반전 해제
             Vector3 scale = transform.localScale;
-            scale.x = -1; 
+            //scale.x = -1; 
+            spriteRenderer.flipX = true;
             transform.localScale = scale;
         }
         // SPUM 애니메이션을 위해 추가
-        else if (input.y != 0)
-        {
-            animator.Play("1_Run");
-        }
-        else
-        {
-            animator.Play("0_idle");
-        }
+        //else if (input.y != 0)
+        //{
+        //    animator.Play("1_Run");
+        //}
+        //else
+        //{
+        //    animator.Play("0_idle");
+        //}
     }
 
     public void TakeDamage(int damage)

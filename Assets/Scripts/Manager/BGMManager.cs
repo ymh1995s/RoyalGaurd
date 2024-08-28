@@ -7,12 +7,12 @@ public class BGMManager : MonoBehaviour
 
     AudioSource audioSource;
     AudioClip[] Audio_BGM;
-    string[] bgmDir = { "Sounds/BGM/bgm1", "Sounds/BGM/bgm2", "Sounds/BGM/bgm3", "Sounds/BGM/bgm4" };
+    string[] bgmDir = { "Sounds/BGM/bgm1", "Sounds/BGM/bgm2", "Sounds/BGM/bgm3", "Sounds/BGM/bgm4", "Sounds/BGM/bgm5" };
 
     private int currentBGMIndex = 0; // 현재 재생 중인 BGM의 인덱스
 
     [Range(0.0f, 1.0f)]
-    float bgmVolume = 0.5f; // 기본 볼륨 설정 (0.0 ~ 1.0)
+    float bgmVolume = 0.3f; // 기본 볼륨 설정 (0.0 ~ 1.0)
 
     void Awake()
     {
@@ -46,22 +46,7 @@ public class BGMManager : MonoBehaviour
     //TODO 여기 추가 정립
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        //switch (scene.name)
-        //{
-        //    case "StartScene":
-        //        //PlayBGM(0); //동영상 대체
-        //        break;
-        //    case "GameScene":
-        //        //PlayBGM(1);
-        //        PlayBGM();
-        //        break;
-        //    case "GameOverScene":
-        //        break;
-        //    case "GameClearScene":
-        //        break;
-        //    default:
-        //        break;
-        //}
+        PlayBGM();
     }
 
     void SetSingleton()
@@ -70,7 +55,7 @@ public class BGMManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
 
             audioSource = gameObject.AddComponent<AudioSource>();
             LoadAudioClips();
@@ -92,22 +77,7 @@ public class BGMManager : MonoBehaviour
         }
     }
 
-    // TODO 추가 정립
     // TODO 브금 바귈 때 순간렉 픽스하기
-    void PlayBGM(int index)
-    {
-        if (index >= 0 && index < Audio_BGM.Length && Audio_BGM[index] != null)
-        {
-            audioSource.clip = Audio_BGM[index];
-            audioSource.loop = true;
-            audioSource.volume = bgmVolume; // 볼륨 설정
-            audioSource.Play();
-        }
-        else
-        {
-            Debug.LogError("Invalid BGM index or AudioClip not loaded.");
-        }
-    }
 
     void PlayBGM()
     {
@@ -124,10 +94,14 @@ public class BGMManager : MonoBehaviour
     {
         if (Audio_BGM.Length == 0) return;
 
+        if (currentBGMIndex == 4) bgmVolume = 0.6f; // 해당 영상 소리가 작아 2배
+        else bgmVolume = 0.2f;
+
         audioSource.clip = Audio_BGM[currentBGMIndex];
         audioSource.loop = false; // 자동 루프 해제
         audioSource.volume = bgmVolume; // 볼륨 설정
         audioSource.Play();
+
 
         // 다음 곡 인덱스를 설정 (루프)
         currentBGMIndex = (currentBGMIndex + 1) % Audio_BGM.Length;
@@ -138,5 +112,4 @@ public class BGMManager : MonoBehaviour
         bgmVolume = Mathf.Clamp(volume, 0.0f, 1.0f); // 볼륨 값 제한 (0.0 ~ 1.0)
         audioSource.volume = bgmVolume; // AudioSource의 볼륨 업데이트
     }
-
 }

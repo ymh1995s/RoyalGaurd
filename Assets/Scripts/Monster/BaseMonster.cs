@@ -10,8 +10,8 @@ public class BaseMonster : MonoBehaviour
     protected enum Level { LV1, LV2, LV3, LV4, LV5, BOSS }
     private Coroutine attackCoroutine;
 
-    //하위 오브젝트의 애니메이터
-    protected Animator animator;
+    //하위 오브젝트의 애니메이터 (수출용)
+    //protected Animator animator;
 
     //탐지 영역
     protected GameObject target; // 목표 지점
@@ -25,14 +25,14 @@ public class BaseMonster : MonoBehaviour
     public int attackPower = 1;
     private float attackInterval = 1.0f;
     private float lastAttackTime = 0.0f;
-    //protected int[] master_Hp = new int[6] { 10, 100, 200, 280, 360, 30000 };
     //protected int[] master_Hp = new int[6] { 10, 80, 130, 150, 160, 15000 };
-    protected int[] master_Hp = new int[6] { 10, 80, 130, 150, 160, 150 };
+    protected int[] master_Hp = new int[6] { 10, 90, 130, 160, 180, 18000 };
 
     //오디오 영역
     public AudioClip[] deathSound = new AudioClip[5]; // 사망 사운드 종류
     private Transform playerTransform; // 플레이어 거리 비례 사운드 조절
     private AudioSource audioSource; // 컴포넌트
+    private Renderer monsterRenderer; // 사망 후 사운드 재생 처리를 위한 몬스터의 렌더러
     CircleCollider2D monsterCollider;
 
     // 참조용 스트링 Arr
@@ -45,42 +45,42 @@ public class BaseMonster : MonoBehaviour
     {
         commandCenter = GameObject.Find("CommandCenter");
 
-        // UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾기
-        Transform unitRootTransform = transform.Find("UnitRoot");
-        if (unitRootTransform != null)
-        {
-            animator = unitRootTransform.GetComponent<Animator>();
-        }
+        //// UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾기
+        //Transform unitRootTransform = transform.Find("UnitRoot");
+        //if (unitRootTransform != null)
+        //{
+        //    animator = unitRootTransform.GetComponent<Animator>();
+        //}
 
-        // UnitRoot에서 Animator를 찾지 못했을 경우 HorseRoot에서 다시 찾기
-        if (animator == null)
-        {
-            Transform horseRootTransform = transform.Find("HorseRoot");
-            if (horseRootTransform != null)
-            {
-                animator = horseRootTransform.GetComponent<Animator>();
-            }
-        }
+        //// UnitRoot에서 Animator를 찾지 못했을 경우 HorseRoot에서 다시 찾기
+        //if (animator == null)
+        //{
+        //    Transform horseRootTransform = transform.Find("HorseRoot");
+        //    if (horseRootTransform != null)
+        //    {
+        //        animator = horseRootTransform.GetComponent<Animator>();
+        //    }
+        //}
 
-        // Animator가 여전히 null이라면 경고를 출력하거나 기본 애니메이터를 설정
-        if (animator == null)
-        {
-            Debug.LogWarning("Animator를 찾지 못했습니다. 기본 Animator로 대체하거나 다른 처리를 진행합니다.");
-            // 필요한 경우 기본 애니메이터를 할당하거나 추가 로직을 구현할 수 있음
-            animator = GetComponent<Animator>();
+        //// Animator가 여전히 null이라면 경고를 출력하거나 기본 애니메이터를 설정
+        //if (animator == null)
+        //{
+        //    Debug.LogWarning("Animator를 찾지 못했습니다. 기본 Animator로 대체하거나 다른 처리를 진행합니다.");
+        //    // 필요한 경우 기본 애니메이터를 할당하거나 추가 로직을 구현할 수 있음
+        //    animator = GetComponent<Animator>();
 
-            if (animator == null)
-            {
-                Debug.LogError("기본 Animator도 존재하지 않습니다. 애니메이터가 없어서 정상적인 동작이 불가능합니다.");
-                // 필요 시 추가 처리를 여기에 구현
-            }
-        }
+        //    if (animator == null)
+        //    {
+        //        Debug.LogError("기본 Animator도 존재하지 않습니다. 애니메이터가 없어서 정상적인 동작이 불가능합니다.");
+        //        // 필요 시 추가 처리를 여기에 구현
+        //    }
+        //}
 
-        // 애니메이터가 유효할 경우에만 트리거를 설정
-        if (animator != null)
-        {
-            animator.SetTrigger("Run");
-        }
+        //// 애니메이터가 유효할 경우에만 트리거를 설정
+        //if (animator != null)
+        //{
+        //    animator.SetTrigger("Run");
+        //}
 
         monsterCollider = GetComponent<CircleCollider2D>();
 
@@ -103,6 +103,7 @@ public class BaseMonster : MonoBehaviour
     {
         playerTransform = GameObject.FindWithTag("Player").transform;
         audioSource = gameObject.AddComponent<AudioSource>();
+        monsterRenderer = GetComponent<Renderer>();
         audioSource.spatialBlend = 1.0f; // 3D 사운드 설정
         audioSource.minDistance = 1.0f; // n일 때 소리 최소, 그 이하 소리 없음
         audioSource.maxDistance = 5.0f; // n일 때 소리 최대, 그 이상 소리 최대
@@ -171,14 +172,14 @@ public class BaseMonster : MonoBehaviour
     {
         hp -= damage;
 
-        if (hp <= 0) Death();
+        if (hp <= 0) StartCoroutine(DeathRoutine());
     }
 
-    void Death()
+    IEnumerator DeathRoutine()
     {
-        animator.SetTrigger("Death");
+        //animator.SetTrigger("Death");
         DropItem();
-        //PlayDeathSound();
+        PlayDeathSound();
 
         isDying = true;
 
@@ -197,14 +198,29 @@ public class BaseMonster : MonoBehaviour
            Destroy(rigid);
         }
 
-        StartCoroutine(DeathRoutine());
+        if (monsterRenderer != null)
+        {
+            monsterRenderer.enabled = false; // 렌더러 비활성화
+        }
+
+        // 소리의 볼륨을 업데이트하는 루프
+        while (audioSource.isPlaying)
+        {
+            UpdateSoundVolume();
+            yield return null; // 매 프레임마다 볼륨을 업데이트합니다.
+        }
+
+        Destroy(gameObject);
+
+
+        //StartCoroutine(DeathRoutine());
     }
 
-    IEnumerator DeathRoutine()
-    {
-        yield return new WaitForSeconds(1f);
-        Destroy(gameObject);
-    }
+    //IEnumerator DeathRoutine()
+    //{
+    //    yield return new WaitForSeconds(1f);
+    //    Destroy(gameObject);
+    //}
 
 
     void UpdateSoundVolume()
