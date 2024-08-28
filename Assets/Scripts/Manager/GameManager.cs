@@ -19,8 +19,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        //Á¦Ãâ¿ë
-        Time.timeScale += 0.5f;
+        Time.timeScale += 0.25f;
     }
 
     void Update()

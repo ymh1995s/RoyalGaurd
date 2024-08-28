@@ -93,6 +93,7 @@ public class BGMManager : MonoBehaviour
     }
 
     // TODO 추가 정립
+    // TODO 브금 바귈 때 순간렉 픽스하기
     void PlayBGM(int index)
     {
         if (index >= 0 && index < Audio_BGM.Length && Audio_BGM[index] != null)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
 
@@ -33,16 +34,16 @@ public class HUDLevelUpHelper
         bonusAppearanceWeight = new Dictionary<int, float>()
         {
             // 만들래 제출용 이지모드
-            { 0, 17 },    // 0은 포함될 확률이 x%
-            { 1, 17 },    // 1은 포함될 확률이 y%
-            { 2, 17 },
-            { 3, 17 },
-            { 4, 17 },
-            { 5, 3 },
-            { 6, 3 },
-            { 7, 3 },
-            { 8, 3 },
-            { 9, 3 }
+            { 0, 18.5f },    // 0은 포함될 확률이 x%
+            { 1, 18.5f },    // 1은 포함될 확률이 y%
+            { 2, 18 },
+            { 3, 18 },
+            { 4, 18 },
+            { 5, 1.5f },
+            { 6, 1.5f },
+            { 7, 2 },
+            { 8, 2 },
+            { 9, 2 }
             //{ 0, 1 }, // 테스트용
             //{ 1, 1 },
             //{ 2, 1 },
@@ -54,6 +55,23 @@ public class HUDLevelUpHelper
             //{ 8, 19 },
             //{ 9, 19 }
         };
+
+        float sum = 0;
+
+        foreach (var kvp in bonusAppearanceWeight)
+        {
+            sum += kvp.Value;
+        }
+
+        // 합이 100이 아니면 경고
+        if (Math.Abs(sum - 100) <= 0.0001)
+        {
+             //  Console.WriteLine($"두 번째 인자의 합이 100입니다. 현재 합: {sum}");
+        }
+        else
+        {
+             Debug.LogError($"두 번째 인자의 합이 100이 아닙니다. 현재 합: {sum}");
+        }
     }
 
     private void GenerateAllPairs()
