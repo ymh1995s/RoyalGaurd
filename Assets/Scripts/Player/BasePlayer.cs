@@ -26,7 +26,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
     public float moveSpeed = 2.0f;
     public int maxHP = 20;
     public int currentHP = 20;
-    int hpAutoRecoverInterval = 5;
+    int hpAutoRecoverInterval = 3;
     public bool isObtainedAutoRecover = false;
 
     //무기 관리
@@ -55,6 +55,9 @@ public class BasePlayer : MonoBehaviour, IDamageable
     ItemCollector itemcollector;
     Gatcha gatcha;
 
+    // 사운드 영역
+    AudioSource audio;
+
     // 참조용 스트링 Arr
     string[] weaponName = new string[3] { "Weapon/유튜브쟁이", "Weapon/숲에남을걸", "Weapon/치지직갈걸" };
     string[] coinName = new string[3] { "Bronze(Clone)", "Silver(Clone)", "Gold(Clone)" };
@@ -74,6 +77,9 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
         // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
         //animator = transform.Find("UnitRoot").GetComponent<Animator>();
+
+        // 오디오 로드
+        audio = GetComponent<AudioSource>();
 
         // 무기 프리펩 로드
         weaponPrefab = new GameObject[weaponName.Length];
@@ -165,6 +171,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
     {
         currentHP -= damage;
         UpdateHealthBar();
+        audio.Play();
 
         if (currentHP <= 0)
         {
@@ -202,7 +209,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         }
     }
 
-    public void Debug_WeaponAdd()
+    public void Debug_WeaponAdd(int no)
     {
         for (int i = 0; i < maxWeaponCount; i++)
         {
@@ -210,7 +217,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
             {
                 GameObject weapon;
 
-                weapon = Instantiate(weaponPrefab[2], transform.position, Quaternion.identity);
+                weapon = Instantiate(weaponPrefab[no], transform.position, Quaternion.identity);
 
                 weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
 

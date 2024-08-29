@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale += 0.25f;
+        Time.timeScale += 0.5f;
     }
 
     void Update()
@@ -136,48 +136,51 @@ public class GameManager : MonoBehaviour
 
     public void DebugWeaponMaster()
     {
-        player.Debug_WeaponAdd();
+        player.Debug_WeaponAdd(2);
     }
 
     public void DebugWeaponAtaackPowerUp()
     {
-        //LevelUpHelper.WeaponAttackPowerUp();
         player.levelUpHelper.WeaponAttackPowerUp();
     }
 
     public void DebugWeaponAtaackSpeedUp()
     {
-        // LevelUpHelper.WeaponAttackSpeedUp();
         player.levelUpHelper.WeaponAttackSpeedUp();
     }
 
     public void DebugWeaponRangeUp()
     {
-        // LevelUpHelper.WeaponRangedUp();
         player.levelUpHelper.WeaponRangedUp();
     }
 
     public void DebugTowerAtaackSpeedUp()
     {
-        // LevelUpHelper.TowerAttackSpeedUp();
         player.levelUpHelper.TowerAttackSpeedUp();
     }
 
     public void DebugTowerRangeUp()
     {
-        // LevelUpHelper.TowerRangeUp();
         player.levelUpHelper.TowerRangeUp();
     }
 
     public void DebugPlayerHPUp()
     {
-        // LevelUpHelper.PlayerHPUp();
         player.levelUpHelper.PlayerHPUp(player);
     }
 
     public void DebugPlayerSpeedUp()
     {
-        // LevelUpHelper.PlayerSpeedUp();
         player.levelUpHelper.PlayerSpeedUp(player);
+    }
+
+    public void DebugBonus()
+    {
+        hudManager.BonusLevelUp();
+    }
+
+    public void DebugWeapon2()
+    {
+        player.Debug_WeaponAdd(1);
     }
 }

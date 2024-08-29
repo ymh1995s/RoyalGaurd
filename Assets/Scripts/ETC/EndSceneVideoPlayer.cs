@@ -9,12 +9,12 @@ public class EndSceneVideoPlayer : MonoBehaviour
     void Start()
     {
         videoPlayer = GetComponent<VideoPlayer>();
-        StartCoroutine(PlayVideoAfterDelay(15f)); // X초 후에 비디오 재생
+        StartCoroutine(PlayVideoAfterDelay(10f)); // X초 후에 비디오 재생
     }
 
     IEnumerator PlayVideoAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSecondsRealtime(delay);
         videoPlayer.Play(); // 비디오 재생
     }
 }

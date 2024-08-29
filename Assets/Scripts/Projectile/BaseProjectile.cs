@@ -48,6 +48,9 @@ public class BaseProjectile : MonoBehaviour
 
     protected virtual void Start()
     {
+        // 투사체 크기를 x배로 설정
+        transform.localScale *= 1.5f;
+
         // 관통 할 수 있는 적의 수
         currentpenetration = maxPenetration;
 

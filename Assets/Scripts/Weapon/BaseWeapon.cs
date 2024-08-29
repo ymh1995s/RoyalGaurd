@@ -22,14 +22,14 @@ public abstract class BaseWeapon : MonoBehaviour
     protected float bulletSpeed = 8f;  // 총알 속도
     protected float fireCountdown = 0f;// 발사 간격을 체크하기 위한 카운트다운 변수
     protected float fireRate; // 발사 간격을 초 단위로 설정 (X초에 한 번 발사)
-    protected float[] fireRates = { 1f, 0.8f, 0.6f };
+    protected float[] fireRates = { 1f, 0.85f, 0.7f };
     static public float fireRateMmul = 1.0f;
     static public int fireMultiple = 1;
     float fireMultipleInterval = 0.2f;
 
     // 탐지 영역
     public float detectionRadius;  // 무기의 탐지 반경
-    protected float[] detectionRadius_ = { 4f, 6f, 8f };
+    protected float[] detectionRadius_ = { 4f, 4.5f, 5f };
     static public float detectionRadiusPlus = 0f;
     protected LayerMask enemyLayer;           // 적 레이어
     protected Collider2D enemyCollider;       // 적 콜라이더

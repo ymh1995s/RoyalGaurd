@@ -2,7 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; // UI 컴포넌트를 사용하기 위해 추가
+using UnityEngine.UI;
+using UnityEngine.Video; // UI 컴포넌트를 사용하기 위해 추가
 
 public class HUDManager : MonoBehaviour
 {
@@ -44,6 +45,11 @@ public class HUDManager : MonoBehaviour
     public Button debugTowerRangeUpButton;
     public Button debugPlayerHPUpButton;
     public Button debugPlayerSpeedUpButton;
+    public Button debugBonusButton;
+    public Button debugWeapon2AddButton;
+
+    // 내수용 보채기 오브젝트
+    public GameObject video;
 
     // 레밸업 게이지 효과
     private RectTransform backgroundPanel; // 게이지 바 배경
@@ -61,8 +67,9 @@ public class HUDManager : MonoBehaviour
     private string[] bonusLevelupDir = { "LevelUpBonus/PowerUp", "LevelUpBonus/AttackSpeedUp", "LevelUpBonus/RangeUp", "LevelUpBonus/HPRecover", "LevelUpBonus/SpeedUp",
         "LevelUpBonus/PenetrationUp","LevelUpBonus/ProjectileUp","LevelUpBonus/HPAutoRecover","LevelUpBonus/CoinDropUp","LevelUpBonus/HiddenTower"};
     private string[] debugBtnDir = { "MENU/DebugBTN/겜속도--", "MENU/DebugBTN/겜속도++", "MENU/마스터웨폰+", "MENU/마스터공업", "MENU/무기공속업", "MENU/무기레인지업", "MENU/타워공속업",
-        "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트"};
+        "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트", "MENU/보너스능력", "MENU/레밸2무기"};
     private string[] expDir = { "EXP/BaseBar", "EXP/BaseBar/RealBar" };
+    private string videoDir = "VideoPlayer";
 
     // 보너스 버튼 등장 가중치
     private List<Vector2Int> bonusAllPairs;
@@ -100,6 +107,17 @@ public class HUDManager : MonoBehaviour
         TowerSpecText = FindChild<Text>(transform, specTextDir[3]);
         levelupHintText = FindChild<Text>(transform, levelUpHintDir);
 
+        // 동영상 영역
+        Transform videoTransform = transform.Find(videoDir);
+        if (videoTransform != null)
+        {
+            video = videoTransform.gameObject;
+        }
+        else
+        {
+            Debug.LogError("Canvas/LevelUpBonus 오브젝트를 찾을 수 없습니다.");
+        }
+
         // 보너스 레밸업 영역
         Transform bonusLevelUpTransform = transform.Find(bonusLevelupMsterDir);
         if (bonusLevelUpTransform != null)
@@ -114,7 +132,31 @@ public class HUDManager : MonoBehaviour
 
     public void BonusLevelUp()
     {
+        tempBool = true;
         levelUpHelper.BonusLevelUp();
+
+        // 동영상 재생
+        StartCoroutine(ActivateAfterDelay(4f));
+    }
+
+    bool tempBool = false;
+    IEnumerator ActivateAfterDelay(float delay)
+    {
+        // 지정된 시간만큼 대기
+        yield return new WaitForSecondsRealtime(delay);
+
+        if(tempBool==true)
+        {
+            // VideoPlayer 객체를 활성화
+            video.SetActive(true);
+        }
+    }
+
+    public void StopVideo()
+    {
+        // VideoPlayer 객체를 비활성화
+        tempBool = false;
+        video.SetActive(false);
     }
 
     void DebugButtonInit()
@@ -130,7 +172,9 @@ public class HUDManager : MonoBehaviour
             debugTowerAttackSpeedUpButton,
             debugTowerRangeUpButton,
             debugPlayerHPUpButton,
-            debugPlayerSpeedUpButton
+            debugPlayerSpeedUpButton,
+            debugBonusButton,
+            debugWeapon2AddButton,
         };
 
         Action[] debugActions = new Action[]
@@ -144,7 +188,9 @@ public class HUDManager : MonoBehaviour
             GameManager.Instance.DebugTowerAtaackSpeedUp,
             GameManager.Instance.DebugTowerRangeUp,
             GameManager.Instance.DebugPlayerHPUp,
-            GameManager.Instance.DebugPlayerSpeedUp
+            GameManager.Instance.DebugPlayerSpeedUp,
+            GameManager.Instance.DebugBonus,
+            GameManager.Instance.DebugWeapon2
         };
 
         InitializeButtons(debugButtonArr, debugBtnDir, debugActions, "Debug");

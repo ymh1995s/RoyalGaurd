@@ -16,7 +16,7 @@ public class SpecialTower : BaseTower
         maxHP = 100;
         base.Start();
 
-        fireRate = 1.5f;
+        fireRate = 1.25f;
         bulletSpeed = 8f;
 
         bulletPrefab = Resources.Load<GameObject>(prefabNames[3]);

@@ -29,13 +29,13 @@ public class Gatcha
         //TODO :글로벌 상점, 새로운 투사체 등
 
         // 배열에 0을 50개, 1을,40개, 2를 10 개 추가
-        AddNumbersToArray(0, 50, levelUpGatcha); //무기 관련
+        AddNumbersToArray(0, 45, levelUpGatcha); //무기 관련
         AddNumbersToArray(1, 40, levelUpGatcha); //타워 관련
-        AddNumbersToArray(2, 10, levelUpGatcha); //플레이어 관련
+        AddNumbersToArray(2, 15, levelUpGatcha); //플레이어 관련
 
         //합이 1000이 되도록
-        AddNumbersToArray(0, 200, weaponGatcha); // 무기 개수
-        AddNumbersToArray(1, 250, weaponGatcha); // 무기 공속 
+        AddNumbersToArray(0, 175, weaponGatcha); // 무기 추가
+        AddNumbersToArray(1, 275, weaponGatcha); // 무기 공속 
         AddNumbersToArray(2, 275, weaponGatcha); // 무기 레인지
         AddNumbersToArray(3, 275, weaponGatcha); // 무기 공격력
 

@@ -60,6 +60,7 @@ public class EnemySpawn : MonoBehaviour
 
             while (true)
             {
+
                 yield return new WaitForSeconds(spawnInterval_changeInterval); // 20초 대기
                 spawnInterval = 1f * multipliers[index]; // 원래 spawnInterval(1f)에 배수를 곱함
                 index = (index + 1) % multipliers.Length; // 인덱스를 순환시킴
@@ -69,6 +70,8 @@ public class EnemySpawn : MonoBehaviour
                 {
                     spawnInterval = 1f * 0.5f;
                 }
+
+                print("현재 스폰 주기 " + spawnInterval);
             }
         }
     }

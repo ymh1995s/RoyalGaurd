@@ -26,7 +26,7 @@ public class BaseMonster : MonoBehaviour
     private float attackInterval = 1.0f;
     private float lastAttackTime = 0.0f;
     //protected int[] master_Hp = new int[6] { 10, 80, 130, 150, 160, 15000 };
-    protected int[] master_Hp = new int[6] { 10, 90, 130, 160, 180, 18000 };
+    protected int[] master_Hp = new int[6] { 10, 50, 90, 180, 240, 22000 };
 
     //오디오 영역
     public AudioClip[] deathSound = new AudioClip[5]; // 사망 사운드 종류
@@ -300,7 +300,7 @@ public class BaseMonster : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") || collision.CompareTag("Tower"))
+        if (collision.CompareTag("Player") || collision.CompareTag("Tower") || collision.CompareTag("CommandCenter"))
         {
             if (attackCoroutine != null)
             {
