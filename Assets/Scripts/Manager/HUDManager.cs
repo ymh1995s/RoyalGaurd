@@ -47,6 +47,7 @@ public class HUDManager : MonoBehaviour
     public Button debugPlayerSpeedUpButton;
     public Button debugBonusButton;
     public Button debugWeapon2AddButton;
+    public Button debugGameClear;
 
     // 내수용 보채기 오브젝트
     public GameObject video;
@@ -67,7 +68,7 @@ public class HUDManager : MonoBehaviour
     private string[] bonusLevelupDir = { "LevelUpBonus/PowerUp", "LevelUpBonus/AttackSpeedUp", "LevelUpBonus/RangeUp", "LevelUpBonus/HPRecover", "LevelUpBonus/SpeedUp",
         "LevelUpBonus/PenetrationUp","LevelUpBonus/ProjectileUp","LevelUpBonus/HPAutoRecover","LevelUpBonus/CoinDropUp","LevelUpBonus/HiddenTower"};
     private string[] debugBtnDir = { "MENU/DebugBTN/겜속도--", "MENU/DebugBTN/겜속도++", "MENU/마스터웨폰+", "MENU/마스터공업", "MENU/무기공속업", "MENU/무기레인지업", "MENU/타워공속업",
-        "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트", "MENU/보너스능력", "MENU/레밸2무기"};
+        "MENU/타워레인지업", "MENU/피뻥", "MENU/헤이스트", "MENU/보너스능력", "MENU/레밸2무기", "MENU/게임클리어"};
     private string[] expDir = { "EXP/BaseBar", "EXP/BaseBar/RealBar" };
     private string videoDir = "VideoPlayer";
 
@@ -157,6 +158,7 @@ public class HUDManager : MonoBehaviour
         // VideoPlayer 객체를 비활성화
         tempBool = false;
         video.SetActive(false);
+
     }
 
     void DebugButtonInit()
@@ -175,6 +177,7 @@ public class HUDManager : MonoBehaviour
             debugPlayerSpeedUpButton,
             debugBonusButton,
             debugWeapon2AddButton,
+            debugGameClear,
         };
 
         Action[] debugActions = new Action[]
@@ -190,7 +193,8 @@ public class HUDManager : MonoBehaviour
             GameManager.Instance.DebugPlayerHPUp,
             GameManager.Instance.DebugPlayerSpeedUp,
             GameManager.Instance.DebugBonus,
-            GameManager.Instance.DebugWeapon2
+            GameManager.Instance.DebugWeapon2,
+            GameManager.Instance.GameClear
         };
 
         InitializeButtons(debugButtonArr, debugBtnDir, debugActions, "Debug");

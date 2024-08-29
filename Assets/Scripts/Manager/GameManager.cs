@@ -183,4 +183,9 @@ public class GameManager : MonoBehaviour
     {
         player.Debug_WeaponAdd(1);
     }
+
+    public void GameClear()
+    {
+        SceneLoader.SceneLoad_ClearScene();
+    }
 }
