@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     public HUDManager hudManager;
     public BasePlayer player;
 
+    private const float defaultTimeScale = 1.5f;
+
     void Awake()
     {
         SetSingleton();
@@ -19,7 +21,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale += 0.5f;
+        Time.timeScale = defaultTimeScale;
+        Debug.Log(Time.timeScale);
     }
 
     void Update()
