@@ -15,42 +15,38 @@ public class HUDManager : MonoBehaviour
     private Text levelupHintText;
 
     // 보너스 레밸업 버튼 컴포넌트
-    // TODO 숫자 하드 코딩 말고 네이밍으로 바꿔야됨
-    // 아닌가 나중에 다른 능력으로 바꿀거라 임시로는 괜찮은가
-    public GameObject BonusLevelUpButtonGroup;
-    public Button[] BonusLevelUpButtonArr;
-    public Button BonusLevelUpButton1;
-    public Button BonusLevelUpButton2;
-    public Button BonusLevelUpButton3;
-    public Button BonusLevelUpButton4;
-    public Button BonusLevelUpButton5;
-    public Button BonusLevelUpButton6;
-    public Button BonusLevelUpButton7;
-    public Button BonusLevelUpButton8;
-    public Button BonusLevelUpButton9;
-    public Button BonusLevelUpButton10;
-
-    // 보너스 레밸업 관려 전역 변수
-    float tempTimeScale = 0f;
+    private GameObject BonusLevelUpButtonGroup;
+    private Button[] BonusLevelUpButtonArr;
+    private Button BonusLevelUpButton1;
+    private Button BonusLevelUpButton2;
+    private Button BonusLevelUpButton3;
+    private Button BonusLevelUpButton4;
+    private Button BonusLevelUpButton5;
+    private Button BonusLevelUpButton6;
+    private Button BonusLevelUpButton7;
+    private Button BonusLevelUpButton8;
+    private Button BonusLevelUpButton9;
+    private Button BonusLevelUpButton10;
 
     // 디버그 버튼 컴포넌트
-    public Button[] debugButtonArr;
-    public Button debugGsmeSpeedMinusButton;
-    public Button debugGsmeSpeedButton;
-    public Button debugWeaponAddButton;
-    public Button debugAttackPowerUpButton;
-    public Button debugWeaponAttackSpeedUpButton;
-    public Button debugWeaponRangeUpButton;
-    public Button debugTowerAttackSpeedUpButton;
-    public Button debugTowerRangeUpButton;
-    public Button debugPlayerHPUpButton;
-    public Button debugPlayerSpeedUpButton;
-    public Button debugBonusButton;
-    public Button debugWeapon2AddButton;
-    public Button debugGameClear;
+    private Button[] debugButtonArr;
+    private Button debugGsmeSpeedMinusButton;
+    private Button debugGsmeSpeedButton;
+    private Button debugWeaponAddButton;
+    private Button debugAttackPowerUpButton;
+    private Button debugWeaponAttackSpeedUpButton;
+    private Button debugWeaponRangeUpButton;
+    private Button debugTowerAttackSpeedUpButton;
+    private Button debugTowerRangeUpButton;
+    private Button debugPlayerHPUpButton;
+    private Button debugPlayerSpeedUpButton;
+    private Button debugBonusButton;
+    private Button debugWeapon2AddButton;
+    private Button debugGameClear;
 
-    // 내수용 보채기 오브젝트
-    public GameObject video;
+    // 내수용 재촉 비디오
+    private GameObject video;
+    private Coroutine choiceHurryCoroutine;
 
     // 레밸업 게이지 효과
     private RectTransform backgroundPanel; // 게이지 바 배경
@@ -72,11 +68,7 @@ public class HUDManager : MonoBehaviour
     private string[] expDir = { "EXP/BaseBar", "EXP/BaseBar/RealBar" };
     private string videoDir = "VideoPlayer";
 
-    // 보너스 버튼 등장 가중치
-    private List<Vector2Int> bonusAllPairs;
-    Dictionary<int, float> bonusAppearanceWeight;
-
-    // 하위 스크립트 로드
+    // 하위 스크립트
     private HUDLevelUpHelper levelUpHelper;
 
     private void Awake()
@@ -137,7 +129,7 @@ public class HUDManager : MonoBehaviour
         levelUpHelper.BonusLevelUp();
 
         // 동영상 재생
-        StartCoroutine(ActivateAfterDelay(4f));
+        choiceHurryCoroutine = StartCoroutine(ActivateAfterDelay(4f));
     }
 
     bool tempBool = false;
@@ -157,8 +149,8 @@ public class HUDManager : MonoBehaviour
     {
         // VideoPlayer 객체를 비활성화
         tempBool = false;
+        StopCoroutine(choiceHurryCoroutine);
         video.SetActive(false);
-
     }
 
     void DebugButtonInit()
@@ -246,7 +238,7 @@ public class HUDManager : MonoBehaviour
             return;
         }
 
-        // 버튼 배열 초기화
+        // 버튼 매칭(링크)
         for (int i = 0; i < buttonDir.Length; i++)
         {
             buttonArr[i] = FindChild<Button>(transform, buttonDir[i]);

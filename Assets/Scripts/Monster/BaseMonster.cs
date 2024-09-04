@@ -22,17 +22,16 @@ public class BaseMonster : MonoBehaviour
     //스텟 영역
     [SerializeField] protected int hp;
     protected float speed = 1f;
-    public int attackPower = 1;
+    private int attackPower = 1;
     private float attackInterval = 1.0f;
     private float lastAttackTime = 0.0f;
-    //protected int[] master_Hp = new int[6] { 10, 80, 130, 150, 160, 15000 };
     protected int[] master_Hp = new int[6] { 10, 50, 90, 180, 250, 25000 };
 
     //오디오 영역
-    public AudioClip[] deathSound = new AudioClip[5]; // 사망 사운드 종류
+    private AudioClip[] deathSound = new AudioClip[5]; // 사망 사운드 종류
     private Transform playerTransform; // 플레이어 거리 비례 사운드 조절
     private AudioSource audioSource; // 컴포넌트
-    private Renderer monsterRenderer; // 사망 후 사운드 재생 처리를 위한 몬스터의 렌더러
+    private Renderer monsterRenderer; // 사망 사운드 재생 처리을 위한 사망 유예 렌더러
     CircleCollider2D monsterCollider;
 
     // 참조용 스트링 Arr
@@ -112,7 +111,6 @@ public class BaseMonster : MonoBehaviour
 
     void SetSearch()
     {
-        target = GameObject.Find("tempCC");
         rigid = GetComponent<Rigidbody2D>();
         targetLayer = new LayerMask[3];
         targetLayer[0] = LayerMask.GetMask("Player");

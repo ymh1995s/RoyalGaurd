@@ -10,19 +10,14 @@ public class BasePlayer : MonoBehaviour, IDamageable
     Rigidbody2D rigid;
     Vector2 input;
     private SpriteRenderer spriteRenderer;
-    public Vector2 minBounds; // 최소 경계
-    public Vector2 maxBounds; // 최대 경계
 
     //하위 오브젝트의 애니메이터 (수출용)
     //private Animator animator;
 
     // 코드 분산용 레밸업 헬퍼
-    public LevelUpHelper levelUpHelper;
+    public PlayerLevelUpHelper levelUpHelper;
 
     //스텟 영역
-    //static public float moveSpeed = 2.0f;
-    //static public int maxHP = 20;
-    //static public int currentHP = 20;
     public float moveSpeed = 2.0f;
     public int maxHP = 20;
     public int currentHP = 20;
@@ -30,7 +25,8 @@ public class BasePlayer : MonoBehaviour, IDamageable
     public bool isObtainedAutoRecover = false;
 
     //무기 관리
-    public int maxWeaponCount = 100;
+    //public int maxWeaponCount = 100;
+    public int maxWeaponCount { get; private set; } = 100;
     public GameObject[] obtainedWeapon;
     public GameObject[] weaponPrefab;
 
@@ -73,7 +69,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         // 하위 스크립트 로드
         itemcollector = new ItemCollector();
         gatcha = new Gatcha();
-        levelUpHelper = new LevelUpHelper();
+        levelUpHelper = new PlayerLevelUpHelper(this);
 
         // 애니메이터 로드 - UnitRoot라는 이름의 자식 객체에서 Animator 컴포넌트를 찾아 할당
         //animator = transform.Find("UnitRoot").GetComponent<Animator>();
@@ -97,6 +93,8 @@ public class BasePlayer : MonoBehaviour, IDamageable
         healthBarForeground = transform.Find("HPBar/RED").GetComponent<RectTransform>();
         originalScale = healthBarForeground.localScale;
         UpdateHealthBar();
+
+        // 자동 체력 회복 코루티
         StartCoroutine(AutoHpRecover());
     }
 
@@ -105,6 +103,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         itemcollector.CollectItem(transform.position, attractionRange, attractionSpeed, itemLayer);
 
         // HUD 업데이트
+        // TODO static 삭제
         GameManager.Instance.hudManager.PlayerHUDUpdate(playerLv, curExp, maxExp, currentHP, moveSpeed);
         GameManager.Instance.hudManager.WeaponHUDUpdate(BaseProjectile.attackPowerUp, BaseWeapon.detectionRadiusPlus, BaseWeapon.fireRateMmul);
         GameManager.Instance.hudManager.TowerHUDUpdate(BaseProjectile.attackPowerUp, BaseTower.detectionRadiusPlus, BaseTower.fireRateMmul);
@@ -123,7 +122,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
             CheckLevelUp();
         }
 
-        // 장외
+        // 장외로 나갈 수 없음
         if (collision.gameObject.CompareTag("Boundary"))
         {
             rigid.velocity = Vector2.zero;
@@ -199,18 +198,19 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
         //Level up
         curExp = System.Math.Max(0, curExp - maxExp);
-        maxExp += 1; //본게임 때 주석 해제
+        maxExp += 1;
         LevelUp();
 
-        // 디버그 단에서 조건 삭제
         if (playerLv % 5 == 0)
         {
-            BonusLevelUp();
+            // 플레이어 스크립트에서는 해당 함수 호출만 하고 종결(래핑)
+            GameManager.Instance.hudManager.BonusLevelUp();
         }
     }
 
     public void Debug_WeaponAdd(int no)
     {
+        // TODO 반복문보단 List로 해야 불필요한 반복문을 안돌 듯
         for (int i = 0; i < maxWeaponCount; i++)
         {
             if (obtainedWeapon[i] == null)
@@ -221,7 +221,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
                 weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
 
-                obtainedWeapon[i] = weapon;
+                obtainedWeapon[i] = weapon; //i 번째 무기
                 levelUpHelper.WeaponSort(this);
                 GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
                 return;
@@ -259,12 +259,6 @@ public class BasePlayer : MonoBehaviour, IDamageable
         }
     }
 
-    void BonusLevelUp()
-    {
-        // 플레이어 스크립트에서는 해당 함수 호출만 하고 종결(래핑)
-        GameManager.Instance.hudManager.BonusLevelUp();
-    }
-
     private IEnumerator AutoHpRecover()
     {
         while (true)
@@ -276,7 +270,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
                 UpdateHealthBar();
             }
 
-            // 지정된 시간(10초) 동안 대기
+            // 지정된 시간(N초) 동안 대기
             yield return new WaitForSeconds(hpAutoRecoverInterval);
         }
     }

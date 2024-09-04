@@ -12,6 +12,7 @@ public class HUDLevelUpHelper
     private float tempTimeScale;                           // 보너스 선택지가 나올 때 멈추기 전의 timeScale
     private GameObject bonusLevelUpButtonGroup;
     private Button[] bonusLevelUpButtonArr;
+    private int allOptionCount = 10; // 현재 준비한 선택지는 총 10개
 
     public HUDLevelUpHelper(GameObject buttonGroup, Button[] buttonArr)
     {
@@ -89,9 +90,9 @@ public class HUDLevelUpHelper
     private void GenerateAllPairs()
     {
         bonusAllPairs = new List<Vector2Int>();
-        for (int i = 0; i <= 9; i++)
+        for (int i = 0; i <= allOptionCount-1; i++)
         {
-            for (int j = i + 1; j <= 9; j++)
+            for (int j = i + 1; j <= allOptionCount - 1; j++)
             {
                 bonusAllPairs.Add(new Vector2Int(i, j));
             }
@@ -188,7 +189,7 @@ public class HUDLevelUpHelper
         // 게임 재생 속도 원위치
         Time.timeScale = tempTimeScale;
 
-        // TODO 호출 방식 재검토
+        // 재촉 동영상 정지
         GameManager.Instance.hudManager.StopVideo();
     }
 

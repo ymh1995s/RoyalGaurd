@@ -5,6 +5,7 @@ public class BossMonster : BaseMonster
     //체력바 영역
     private RectTransform healthBarForeground;
     private Vector3 originalScale;
+    private float bossMoveSpeed = 0.5f;
 
     protected override void Start()
     {
@@ -13,7 +14,7 @@ public class BossMonster : BaseMonster
         //animator.speed = 0.8f;
 
         hp = master_Hp[(int)Level.BOSS];
-        speed = 0.5f;
+        speed = bossMoveSpeed;
 
         //체력바 영역
         healthBarForeground = transform.Find("HPBar/RED").GetComponent<RectTransform>();
@@ -23,13 +24,15 @@ public class BossMonster : BaseMonster
 
     protected override void ChooseTarget()
     {
-        target = commandCenter;
+        target = commandCenter; //보스는 무조건 기지를 향해 이동
     }
 
     protected override void TakeDamage(int damage)
     {
         hp -= damage;
         UpdateHealthBar();
+
+        Debug.Log($"BOSS HP {hp} damage {damage}");
 
         if (hp < 0)
         {

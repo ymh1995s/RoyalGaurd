@@ -3,7 +3,7 @@ using UnityEngine;
 public class BaseCommandCenter : MonoBehaviour, IDamageable
 {
     //스텟 영역
-    public int maxHP = 30;
+    [SerializeField] private int maxHP = 30;
     [SerializeField] private int currentHp;
 
     //체력바 영역
@@ -12,9 +12,15 @@ public class BaseCommandCenter : MonoBehaviour, IDamageable
 
     void Start()
     {
+        Init();
+    }
+
+    void Init()
+    {
         currentHp = maxHP;
         healthBarForeground = transform.Find("HPBar/RED").GetComponent<RectTransform>();
         originalScale = healthBarForeground.localScale;
+
         UpdateHealthBar();
     }
 

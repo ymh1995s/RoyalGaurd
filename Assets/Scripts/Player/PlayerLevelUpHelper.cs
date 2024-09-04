@@ -1,9 +1,43 @@
 using System;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class LevelUpHelper : MonoBehaviour
+public class PlayerLevelUpHelper : MonoBehaviour
 {
     //TODO : 레밸업 인자들을 함수 파라미터 말고 배열이라던가 해서 관리해야겠다.
+
+    BasePlayer player;
+    
+    public PlayerLevelUpHelper(BasePlayer _player)
+    {
+        //player = _player;
+    }
+
+    //public void WeaponAdd(BasePlayer player, Transform parentTransform)
+    //{
+    //    for (int i = 0; i < player.maxWeaponCount; i++)
+    //    {
+    //        if (player.obtainedWeapon[i] == null)
+    //        {
+    //            GameObject weapon;
+    //            int index = UnityEngine.Random.Range(1, 101); // 1부터 101
+
+    //            if (index < player.weaponAddClassCut[0])
+    //                weapon = GameObject.Instantiate(player.weaponPrefab[0], parentTransform.position, Quaternion.identity);
+    //            else if (index < player.weaponAddClassCut[1])
+    //                weapon = GameObject.Instantiate(player.weaponPrefab[1], parentTransform.position, Quaternion.identity);
+    //            else
+    //                weapon = GameObject.Instantiate(player.weaponPrefab[2], parentTransform.position, Quaternion.identity);
+
+    //            weapon.transform.parent = parentTransform; // 전달된 Transform을 부모로 설정
+
+    //            player.obtainedWeapon[i] = weapon;
+    //            WeaponSort(player);
+    //            GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
+    //            return;
+    //        }
+    //    }
+    //}
 
     public void WeaponAdd(BasePlayer player, Transform parentTransform)
     {

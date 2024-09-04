@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// 플레이어 하위 스크립트
 public class Gatcha
 {
     public int[] levelUpGatcha = new int[100]; //MAX LEVEL 100
