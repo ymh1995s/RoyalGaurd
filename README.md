@@ -1,9 +1,9 @@
-# RoyalGaurd
+# RandomDefense
 랜덤 디펜스
 
-핵심 코드는 [[KaneLunkDefense/Assets/]](https://github.com/ymh1995s/RoyalGaurd/tree/main/Source/Assets/Scripts)에서 확인할 수 있습니다.
+핵심 코드는 [[Source/Assets/Scripts]](https://github.com/ymh1995s/RoyalGaurd/tree/main/Source/Assets/Scripts)에서 확인할 수 있습니다.
 
-데모 프로그램은 [[DEMO 폴더]](https://github.com/ymh1995s/RoyalGaurd)에서 확인할 수 있습니다.
+데모 프로그램은 [[DEMO 폴더]](https://github.com/ymh1995s/RoyalGaurd/DEMO)에서 확인할 수 있습니다.
 
 ## 개요
 뱀파이어 서바이버에 디펜스 요소를 더한 아이디어로 디펜스 게임 제작
