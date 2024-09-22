@@ -22,38 +22,14 @@ public class SpecialTower : BaseTower
         bulletPrefab = Resources.Load<GameObject>(prefabNames[3]);
     }
 
-    // TODO 부모함수 재사용으로 변경
-    protected override void Fire()
+    protected override void Fire(Vector3 spawnPoint)
     {
         foreach (var offset in spawnOffsets)
         {
             // 총알 생성 위치 계산
             Vector3 spawnPosition = transform.position + offset;
 
-            // 총알 생성
-            GameObject bulletGO = Instantiate(bulletPrefab, spawnPosition, Quaternion.identity);
-
-            // 총알의 Z축 위치를 조정하여 Grid보다 앞에 배치
-            Vector3 bulletPosition = bulletGO.transform.position;
-            bulletPosition.z = -3; // 필요에 따라 조정
-            bulletGO.transform.position = bulletPosition;
-
-            // 목표 방향 계산
-            Vector3 directionToTarget = (target.position - bulletGO.transform.position).normalized;
-
-            // 오차 범위 설정 (예: -5도에서 +5도까지)
-            float deviationAngle = Random.Range(-5f, 5f);
-            float angle = Mathf.Atan2(directionToTarget.y, directionToTarget.x) * Mathf.Rad2Deg + deviationAngle;
-
-            // 오차를 적용한 방향 계산
-            Vector3 deviationDirection = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0).normalized;
-
-            // 총알의 방향을 목표로 설정 (회전 설정)
-            bulletGO.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-
-            // Rigidbody2D에 방향 속도 설정
-            Rigidbody2D rb = bulletGO.GetComponent<Rigidbody2D>();
-            rb.velocity = deviationDirection * bulletSpeed;
+            base.Fire(spawnPosition);
         }
     }
 }

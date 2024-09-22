@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BaseMonster : MonoBehaviour
 {
-    // TODO : GPT가 해주는 리펙토링 이해하고 다시 리펙토링
+    // TODO : 리펙토링
 
     private Rigidbody2D rigid;
     private bool isDying = false;   // 몬스터 생존 여부

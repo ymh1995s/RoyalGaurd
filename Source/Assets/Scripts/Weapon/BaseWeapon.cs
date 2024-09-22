@@ -106,7 +106,7 @@ public abstract class BaseWeapon : MonoBehaviour
         }
     }
 
-    protected virtual void Fire()
+    protected virtual void CheckIsReadyFire()
     {
         fireCountdown -= Time.deltaTime;
 
@@ -116,16 +116,28 @@ public abstract class BaseWeapon : MonoBehaviour
 
             if (fireCountdown <= 0f)
             {
-                // FireMultipleTimes 코루틴을 시작하고, fireCountdown을 바로 갱신
+                // FireMultiple 코루틴을 시작하고, fireCountdown을 바로 갱신
                 Transform thistarget = target;
-                StartCoroutine(FireMultipleTimes(thistarget));
+                StartCoroutine(FireMultiple(thistarget));
                 fireCountdown = fireRate * fireRateMmul; // fireCountdown 갱신
             }
         }
     }
 
-    // TODO 함수명 재정립
-    void RealFire(Transform thisTarget)
+    // 투사체 증가 코루틴
+    private IEnumerator FireMultiple(Transform thisTarget)
+    {
+        for (int i = 0; i < fireMultiple; i++)
+        {
+            Fire(thisTarget);
+
+            // 다음 발사 전까지 대기(fireMultipleInterval)
+            // 여기서 fireRateMmul는 공속 보정용으로 쓰임
+            yield return new WaitForSeconds(fireMultipleInterval * fireRateMmul);
+        }
+    }
+
+    void Fire(Transform thisTarget)
     {
         GameObject bulletGO = Instantiate(bulletPrefab, transform.position, transform.rotation);
 
@@ -148,17 +160,6 @@ public abstract class BaseWeapon : MonoBehaviour
         direction = Quaternion.Euler(0, 0, randomAngle) * direction;
 
         rb.velocity = direction * bulletSpeed;
-    }
-
-    private IEnumerator FireMultipleTimes(Transform thisTarget)
-    {
-        for (int i = 0; i < fireMultiple; i++)
-        {
-            RealFire(thisTarget);
-
-            // 다음 발사 전까지 대기 (0.1초)
-            yield return new WaitForSeconds(fireMultipleInterval * fireRateMmul);
-        }
     }
 
     private void OnDrawGizmos()

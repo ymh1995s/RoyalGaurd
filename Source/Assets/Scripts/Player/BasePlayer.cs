@@ -86,7 +86,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
         // 무기 1개 기본 제공
         obtainedWeapon = new GameObject[maxWeaponCount];
-        levelUpHelper.WeaponAdd(this, this.transform);
+        levelUpHelper.WeaponAdd();
 
         // 체력바 최초 세팅
         currentHP = maxHP;
@@ -222,7 +222,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
                 weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
 
                 obtainedWeapon[i] = weapon; //i 번째 무기
-                levelUpHelper.WeaponSort(this);
+                levelUpHelper.WeaponSort();
                 GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
                 return;
             }
@@ -237,7 +237,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         {
             int _weaponIndex = gatcha.weaponGatcha[gatcha_weaponIndex++];
 
-            if (_weaponIndex == 0) levelUpHelper.WeaponAdd(this, this.transform);
+            if (_weaponIndex == 0) levelUpHelper.WeaponAdd();
             else if (_weaponIndex == 1) levelUpHelper.WeaponAttackSpeedUp();
             else if (_weaponIndex == 2) levelUpHelper.WeaponRangedUp();
             else if (_weaponIndex == 3) levelUpHelper.WeaponAttackPowerUp();
@@ -250,7 +250,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         else if (index == 2)
         {
             int _playerIndex = gatcha.playerGatcha[gatcha_playerIndex++];
-            levelUpHelper.PlayerUpgrade(this, _playerIndex);
+            levelUpHelper.PlayerUpgrade(_playerIndex);
             UpdateHealthBar(); //체력 업그레이드 시 업그레이드 된 체력 반영
         }
         else

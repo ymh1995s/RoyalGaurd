@@ -150,12 +150,12 @@ public class GameManager : MonoBehaviour
 
     public void DebugPlayerHPUp()
     {
-        player.levelUpHelper.PlayerHPUp(player);
+        player.levelUpHelper.PlayerHPUp();
     }
 
     public void DebugPlayerSpeedUp()
     {
-        player.levelUpHelper.PlayerSpeedUp(player);
+        player.levelUpHelper.PlayerSpeedUp();
     }
 
     public void DebugBonus()

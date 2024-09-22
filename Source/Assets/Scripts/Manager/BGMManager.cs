@@ -43,7 +43,6 @@ public class BGMManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    //TODO 여기 추가 정립
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         PlayBGM();
@@ -77,7 +76,7 @@ public class BGMManager : MonoBehaviour
         }
     }
 
-    // TODO 브금 바귈 때 순간렉 픽스하기
+    // TODO 브금 바귈 때 순간렉 픽스
 
     void PlayBGM()
     {

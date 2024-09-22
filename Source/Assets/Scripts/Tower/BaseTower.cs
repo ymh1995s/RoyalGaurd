@@ -149,13 +149,13 @@ public class BaseTower : MonoBehaviour, IDamageable
         // 애니메이션의 현재 시간을 기다린 후 총알 발사
         //yield return new WaitForSeconds(fireDelayTime * fireRateMmul);
         yield return new WaitForSeconds(fireRateMmul);
-        if (target != null) Fire();
+        if (target != null) Fire(transform.position);
     }
 
-    protected virtual void Fire()
+    protected virtual void Fire(Vector3 spawnPoint)
     {
         // 총알 생성
-        GameObject bulletGO = Instantiate(bulletPrefab, transform.position, Quaternion.identity); // 회전 없이 생성
+        GameObject bulletGO = Instantiate(bulletPrefab, spawnPoint, Quaternion.identity); // 회전 없이 생성
 
         // 총알의 Z축 위치를 조정하여 Grid보다 앞에 배치
         Vector3 bulletPosition = bulletGO.transform.position;
@@ -163,7 +163,8 @@ public class BaseTower : MonoBehaviour, IDamageable
         bulletGO.transform.position = bulletPosition;
 
         // 목표 방향 계산
-        Vector3 directionToTarget = (target.position - transform.position).normalized;
+        //Vector3 directionToTarget = (target.position - transform.position).normalized;
+        Vector3 directionToTarget = (target.position - bulletGO.transform.position).normalized;
 
         // 오차 범위 설정 (예: -5도에서 +5도까지)
         float deviationAngle = Random.Range(-5f, 5f);

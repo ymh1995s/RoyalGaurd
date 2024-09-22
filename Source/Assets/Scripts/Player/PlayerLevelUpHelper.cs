@@ -4,42 +4,16 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerLevelUpHelper : MonoBehaviour
 {
-    //TODO : 레밸업 인자들을 함수 파라미터 말고 배열이라던가 해서 관리해야겠다.
+    //TODO : 레밸업 인자들을 함수 파라미터 말고 배열로 관리
 
     BasePlayer player;
     
     public PlayerLevelUpHelper(BasePlayer _player)
     {
-        //player = _player;
+        player = _player;
     }
 
-    //public void WeaponAdd(BasePlayer player, Transform parentTransform)
-    //{
-    //    for (int i = 0; i < player.maxWeaponCount; i++)
-    //    {
-    //        if (player.obtainedWeapon[i] == null)
-    //        {
-    //            GameObject weapon;
-    //            int index = UnityEngine.Random.Range(1, 101); // 1부터 101
-
-    //            if (index < player.weaponAddClassCut[0])
-    //                weapon = GameObject.Instantiate(player.weaponPrefab[0], parentTransform.position, Quaternion.identity);
-    //            else if (index < player.weaponAddClassCut[1])
-    //                weapon = GameObject.Instantiate(player.weaponPrefab[1], parentTransform.position, Quaternion.identity);
-    //            else
-    //                weapon = GameObject.Instantiate(player.weaponPrefab[2], parentTransform.position, Quaternion.identity);
-
-    //            weapon.transform.parent = parentTransform; // 전달된 Transform을 부모로 설정
-
-    //            player.obtainedWeapon[i] = weapon;
-    //            WeaponSort(player);
-    //            GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
-    //            return;
-    //        }
-    //    }
-    //}
-
-    public void WeaponAdd(BasePlayer player, Transform parentTransform)
+    public void WeaponAdd()
     {
         for (int i = 0; i < player.maxWeaponCount; i++)
         {
@@ -49,23 +23,23 @@ public class PlayerLevelUpHelper : MonoBehaviour
                 int index = UnityEngine.Random.Range(1, 101); // 1부터 101
 
                 if (index < player.weaponAddClassCut[0])
-                    weapon = GameObject.Instantiate(player.weaponPrefab[0], parentTransform.position, Quaternion.identity);
+                    weapon = GameObject.Instantiate(player.weaponPrefab[0], player.transform.position, Quaternion.identity);
                 else if (index < player.weaponAddClassCut[1])
-                    weapon = GameObject.Instantiate(player.weaponPrefab[1], parentTransform.position, Quaternion.identity);
+                    weapon = GameObject.Instantiate(player.weaponPrefab[1], player.transform.position, Quaternion.identity);
                 else
-                    weapon = GameObject.Instantiate(player.weaponPrefab[2], parentTransform.position, Quaternion.identity);
+                    weapon = GameObject.Instantiate(player.weaponPrefab[2], player.transform.position, Quaternion.identity);
 
-                weapon.transform.parent = parentTransform; // 전달된 Transform을 부모로 설정
+                weapon.transform.parent = player.transform; // 전달된 Transform을 부모로 설정
 
                 player.obtainedWeapon[i] = weapon;
-                WeaponSort(player);
+                WeaponSort();
                 GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
                 return;
             }
         }
     }
 
-    public void WeaponSort(BasePlayer player)
+    public void WeaponSort()
     {
         GameObject[] weapons1 = GameObject.FindGameObjectsWithTag("LV1Weapon");
         GameObject[] weapons2 = GameObject.FindGameObjectsWithTag("LV2Weapon");
@@ -127,13 +101,13 @@ public class PlayerLevelUpHelper : MonoBehaviour
         GameManager.Instance.hudManager.LevelUpHintUpdate("타워 사거리 증가!");
     }
 
-    public void PlayerUpgrade(BasePlayer player, int index)
+    public void PlayerUpgrade(int index)
     {
-        if (index == 0) PlayerHPUp(player);
-        else if (index == 1) PlayerSpeedUp(player);
+        if (index == 0) PlayerHPUp();
+        else if (index == 1) PlayerSpeedUp();
     }
 
-    public void PlayerHPUp(BasePlayer player, int value = 1)
+    public void PlayerHPUp( int value = 1)
     {
         player.maxHP += value;
         player.currentHP = player.maxHP;
@@ -141,7 +115,7 @@ public class PlayerLevelUpHelper : MonoBehaviour
         GameManager.Instance.player.UpdateHealthBar();
     }
 
-    public void PlayerSpeedUp(BasePlayer player, float value = 0.2f)
+    public void PlayerSpeedUp(float value = 0.2f)
     {
         player.moveSpeed += value;
         GameManager.Instance.hudManager.LevelUpHintUpdate("플레이어 이동속도 증가!");

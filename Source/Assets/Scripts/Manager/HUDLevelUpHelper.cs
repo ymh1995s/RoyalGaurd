@@ -210,12 +210,12 @@ public class HUDLevelUpHelper
 
     public void BonusHPUp()
     {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerHPUp(GameManager.Instance.player, 0));
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerHPUp(0));
     }
 
     public void BonusMoveSpeedUp()
     {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(GameManager.Instance.player, 0.2f));
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(0.2f));
     }
 
     // TODO : 5~9´Â ENUM °ü¸®
