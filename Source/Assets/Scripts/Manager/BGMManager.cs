@@ -76,7 +76,6 @@ public class BGMManager : MonoBehaviour
         }
     }
 
-    // TODO 브금 바귈 때 순간렉 픽스
 
     void PlayBGM()
     {

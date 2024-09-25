@@ -14,6 +14,8 @@ public class HUDLevelUpHelper
     private Button[] bonusLevelUpButtonArr;
     private int allOptionCount = 10; // 현재 준비한 선택지는 총 10개
 
+    enum eUniqueAbility { PenetraionUp =5, ProjectileUp=6, HPAutoRecover=7, CoinDropUp=8, HiddenTower=9 }
+
     public HUDLevelUpHelper(GameObject buttonGroup, Button[] buttonArr)
     {
         if(buttonGroup==null || buttonArr == null)
@@ -63,7 +65,7 @@ public class HUDLevelUpHelper
             //{ 3, 2 },
             //{ 4, 2 },
             //{ 5, 20 },    // 관통
-            //{ 6, 0},    // 투사체 증가 
+            //{ 6, 20},    // 투사체 증가 
             //{ 7, 20 },    // 체력 자동 회복
             //{ 8, 20 },    // 코인 확률
             //{ 9, 20 }     // 스페셜 타워
@@ -218,35 +220,34 @@ public class HUDLevelUpHelper
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PlayerSpeedUp(0.2f));
     }
 
-    // TODO : 5~9는 ENUM 관리
     public void BonusPenetraionUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.PenetrationUp());
-        ExcludePairsContaining(5);
+        ExcludePairsContaining((int)eUniqueAbility.PenetraionUp);
     }
 
     public void BonusProjectileUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.ProjectileUp());
-        ExcludePairsContaining(6);
+        ExcludePairsContaining((int)eUniqueAbility.ProjectileUp);
     }
 
     public void BonusHPAutoRecover()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HPAutoRecover());
-        ExcludePairsContaining(7);
+        ExcludePairsContaining((int)eUniqueAbility.HPAutoRecover);
     }
 
     public void BonusCoinDropUp()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.CoinDropUp());
-        ExcludePairsContaining(8);
+        ExcludePairsContaining((int)eUniqueAbility.CoinDropUp);
     }
 
     public void BonusHiddenTower()
     {
         ApplyBonus(() => GameManager.Instance.player.levelUpHelper.HiddenTowerSpawn());
-        ExcludePairsContaining(9);
+        ExcludePairsContaining((int)eUniqueAbility.HiddenTower);
     }
 
     public void ExcludePairsContaining(int number)
@@ -256,7 +257,7 @@ public class HUDLevelUpHelper
     }
 
     // 실제 설정한 퍼센트로 나오는지 print 확인
-    public void TestProbabilities(int testCount)
+    void TestProbabilities(int testCount)
     {
         Dictionary<int, int> numberCounts = new Dictionary<int, int>();
 

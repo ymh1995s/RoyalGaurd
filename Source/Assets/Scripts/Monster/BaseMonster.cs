@@ -284,7 +284,7 @@ public class BaseMonster : MonoBehaviour
         }
         else if (collision.CompareTag("Player") || collision.CompareTag("Tower") || collision.CompareTag("CommandCenter"))
         {
-            IDamageable damageable = collision.GetComponent<IDamageable>();
+            IBaseAllyUnit damageable = collision.GetComponent<IBaseAllyUnit>();
             if (damageable != null)
             {
                 if (attackCoroutine != null)
@@ -308,7 +308,7 @@ public class BaseMonster : MonoBehaviour
         }
     }
 
-    private IEnumerator Attack(IDamageable target)
+    private IEnumerator Attack(IBaseAllyUnit target)
     {
         while (target != null)
         {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BaseCommandCenter : MonoBehaviour, IDamageable
+public class BaseCommandCenter : MonoBehaviour, IBaseAllyUnit
 {
     //½ºÅÝ ¿µ¿ª
     [SerializeField] private int maxHP = 30;
@@ -36,7 +36,7 @@ public class BaseCommandCenter : MonoBehaviour, IDamageable
         }
     }
 
-    void Death()
+    public void Death()
     {
         SceneLoader.SceneLoad_OverScene();
     }

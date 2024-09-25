@@ -27,8 +27,6 @@ public class Gatcha
         // 플레이어 체력
         // 플레이어 이동속도
 
-        //TODO :글로벌 상점, 새로운 투사체 등
-
         // 배열에 0을 50개, 1을,40개, 2를 10 개 추가
         AddNumbersToArray(0, 45, levelUpGatcha); //무기 관련
         AddNumbersToArray(1, 40, levelUpGatcha); //타워 관련

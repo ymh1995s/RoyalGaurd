@@ -16,9 +16,9 @@ public abstract class BaseWeapon : MonoBehaviour
     protected float orbitRadius = 1f;  // 공전 반지름
     protected float orbitSpeed = 120;   // 공전 속도 (각도 단위)
     public float currentAngle { get; set; }   // 현재 회전 각도
-    
+
     // 스텟 영역
-    public GameObject bulletPrefab; // 발사할 총알 프리팹
+    protected GameObject bulletPrefab; // 발사할 총알 프리팹
     protected float bulletSpeed = 8f;  // 총알 속도
     protected float fireCountdown = 0f;// 발사 간격을 체크하기 위한 카운트다운 변수
     protected float fireRate; // 발사 간격을 초 단위로 설정 (X초에 한 번 발사)
@@ -28,7 +28,7 @@ public abstract class BaseWeapon : MonoBehaviour
     float fireMultipleInterval = 0.2f;
 
     // 탐지 영역
-    public float detectionRadius;  // 무기의 탐지 반경
+    protected float detectionRadius;  // 무기의 탐지 반경
     protected float[] detectionRadius_ = { 4f, 4.5f, 5f };
     static public float detectionRadiusPlus = 0f;
     protected LayerMask enemyLayer;           // 적 레이어

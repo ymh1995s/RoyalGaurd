@@ -1,11 +1,13 @@
+using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BasePlayer : MonoBehaviour, IDamageable
+public class BasePlayer : MonoBehaviour, IBaseAllyUnit
 {
     Rigidbody2D rigid;
     Vector2 input;
@@ -25,9 +27,8 @@ public class BasePlayer : MonoBehaviour, IDamageable
     public bool isObtainedAutoRecover = false;
 
     //무기 관리
-    //public int maxWeaponCount = 100;
-    public int maxWeaponCount { get; private set; } = 100;
-    public GameObject[] obtainedWeapon;
+    public List<GameObject> obtainedWeapon;
+    //public GameObject[] obtainedWeapon;
     public GameObject[] weaponPrefab;
 
     //아이템 자석 효과
@@ -85,7 +86,7 @@ public class BasePlayer : MonoBehaviour, IDamageable
         }
 
         // 무기 1개 기본 제공
-        obtainedWeapon = new GameObject[maxWeaponCount];
+        //obtainedWeapon = new GameObject[maxWeaponCount];
         levelUpHelper.WeaponAdd();
 
         // 체력바 최초 세팅
@@ -103,7 +104,6 @@ public class BasePlayer : MonoBehaviour, IDamageable
         itemcollector.CollectItem(transform.position, attractionRange, attractionSpeed, itemLayer);
 
         // HUD 업데이트
-        // TODO static 삭제
         GameManager.Instance.hudManager.PlayerHUDUpdate(playerLv, curExp, maxExp, currentHP, moveSpeed);
         GameManager.Instance.hudManager.WeaponHUDUpdate(BaseProjectile.attackPowerUp, BaseWeapon.detectionRadiusPlus, BaseWeapon.fireRateMmul);
         GameManager.Instance.hudManager.TowerHUDUpdate(BaseProjectile.attackPowerUp, BaseTower.detectionRadiusPlus, BaseTower.fireRateMmul);
@@ -210,23 +210,11 @@ public class BasePlayer : MonoBehaviour, IDamageable
 
     public void Debug_WeaponAdd(int no)
     {
-        // TODO 반복문보단 List로 해야 불필요한 반복문을 안돌 듯
-        for (int i = 0; i < maxWeaponCount; i++)
-        {
-            if (obtainedWeapon[i] == null)
-            {
-                GameObject weapon;
-
-                weapon = Instantiate(weaponPrefab[no], transform.position, Quaternion.identity);
-
-                weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
-
-                obtainedWeapon[i] = weapon; //i 번째 무기
-                levelUpHelper.WeaponSort();
-                GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
-                return;
-            }
-        }
+        GameObject weapon = Instantiate(weaponPrefab[no], transform.position, Quaternion.identity);
+        weapon.transform.parent = transform; // 현재 플레이어를 부모로 설정
+        obtainedWeapon.Add(weapon);
+        levelUpHelper.WeaponSort();
+        GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
     }
 
     void LevelUp()

@@ -28,8 +28,6 @@ public class EnemySpawn : MonoBehaviour
     {
         while (true)
         {
-            // TODO 오브젝트 풀링
-
             // (윗쪽 스폰) 범위 내에서 랜덤한 위치를 설정
             float randomX = Random.Range(topSpawnPointRange[0], topSpawnPointRange[1]);
             float randomY = Random.Range(topSpawnPointRange[2], topSpawnPointRange[3]);

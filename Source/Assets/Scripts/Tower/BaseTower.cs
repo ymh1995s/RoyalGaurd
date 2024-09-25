@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class BaseTower : MonoBehaviour, IDamageable
+public class BaseTower : MonoBehaviour, IBaseAllyUnit
 {
     //½ºÅÝ ¿µ¿ª
     protected int maxHP = 50;
@@ -75,7 +75,7 @@ public class BaseTower : MonoBehaviour, IDamageable
         }
     }
 
-    void Death()
+    public void Death()
     {
         gameObject.SetActive(false);
 

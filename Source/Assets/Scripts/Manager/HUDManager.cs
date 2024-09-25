@@ -81,7 +81,7 @@ public class HUDManager : MonoBehaviour
         InitializeButtons(); // 버튼 초기화    
     }
 
-    public void InitializeButtons()
+    private void InitializeButtons()
     {
         DebugButtonInit();
         BonusButtonInit();
@@ -208,7 +208,6 @@ public class HUDManager : MonoBehaviour
             BonusLevelUpButton10,
         };
 
-        // TODO : Init 순서상 여기 배치했지만 생성자의 위치 검토
         levelUpHelper = new HUDLevelUpHelper(BonusLevelUpButtonGroup, BonusLevelUpButtonArr);
 
         Action[] bonusActions = new Action[]
@@ -261,7 +260,7 @@ public class HUDManager : MonoBehaviour
     }
 
     // 현재 경험치와 최대 경험치를 사용해 게이지 바를 업데이트하는 함수
-    public void UpdateExperienceBar(float currentExperience, float maxExperience)
+    private void UpdateExperienceBar(float currentExperience, float maxExperience)
     {
         if (backgroundPanel == null || experienceBar == null)
         {

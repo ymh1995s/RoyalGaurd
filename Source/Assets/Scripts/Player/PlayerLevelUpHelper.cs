@@ -4,8 +4,6 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerLevelUpHelper : MonoBehaviour
 {
-    //TODO : 레밸업 인자들을 함수 파라미터 말고 배열로 관리
-
     BasePlayer player;
     
     public PlayerLevelUpHelper(BasePlayer _player)
@@ -15,28 +13,22 @@ public class PlayerLevelUpHelper : MonoBehaviour
 
     public void WeaponAdd()
     {
-        for (int i = 0; i < player.maxWeaponCount; i++)
-        {
-            if (player.obtainedWeapon[i] == null)
-            {
-                GameObject weapon;
-                int index = UnityEngine.Random.Range(1, 101); // 1부터 101
+        GameObject weapon;
+        int index = UnityEngine.Random.Range(1, 101); // 1부터 101
 
-                if (index < player.weaponAddClassCut[0])
-                    weapon = GameObject.Instantiate(player.weaponPrefab[0], player.transform.position, Quaternion.identity);
-                else if (index < player.weaponAddClassCut[1])
-                    weapon = GameObject.Instantiate(player.weaponPrefab[1], player.transform.position, Quaternion.identity);
-                else
-                    weapon = GameObject.Instantiate(player.weaponPrefab[2], player.transform.position, Quaternion.identity);
+        if (index < player.weaponAddClassCut[0])
+            weapon = GameObject.Instantiate(player.weaponPrefab[0], player.transform.position, Quaternion.identity);
+        else if (index < player.weaponAddClassCut[1])
+            weapon = GameObject.Instantiate(player.weaponPrefab[1], player.transform.position, Quaternion.identity);
+        else
+            weapon = GameObject.Instantiate(player.weaponPrefab[2], player.transform.position, Quaternion.identity);
 
-                weapon.transform.parent = player.transform; // 전달된 Transform을 부모로 설정
+        weapon.transform.parent = player.transform; // 전달된 Transform을 부모로 설정
 
-                player.obtainedWeapon[i] = weapon;
-                WeaponSort();
-                GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
-                return;
-            }
-        }
+        player.obtainedWeapon.Add(weapon);
+        WeaponSort();
+        GameManager.Instance.hudManager.LevelUpHintUpdate("무기 추가!");
+        return;
     }
 
     public void WeaponSort()

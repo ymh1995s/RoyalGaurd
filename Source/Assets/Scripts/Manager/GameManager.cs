@@ -70,8 +70,6 @@ public class GameManager : MonoBehaviour
 
     private void ResetStaticParameter()
     {
-        //TODO : Static 미사용
-
         // BaseTower
         BaseTower.fireRateMmul = 1.0f; // 공격 속도 업그레이드 곱셈 적용
         BaseTower.detectionRadius = 10f;  // 타워의 탐지 반경
