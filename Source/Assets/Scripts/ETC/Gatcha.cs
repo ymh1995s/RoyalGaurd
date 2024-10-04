@@ -33,8 +33,8 @@ public class Gatcha
         AddNumbersToArray(2, 15, levelUpGatcha); //플레이어 관련
 
         //합이 1000이 되도록
-        AddNumbersToArray(0, 175, weaponGatcha); // 무기 추가
-        AddNumbersToArray(1, 275, weaponGatcha); // 무기 공속 
+        AddNumbersToArray(0, 150, weaponGatcha); // 무기 추가
+        AddNumbersToArray(1, 300, weaponGatcha); // 무기 공속 
         AddNumbersToArray(2, 275, weaponGatcha); // 무기 레인지
         AddNumbersToArray(3, 275, weaponGatcha); // 무기 공격력
 

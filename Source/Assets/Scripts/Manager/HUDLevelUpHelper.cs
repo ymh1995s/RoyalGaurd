@@ -37,14 +37,14 @@ public class HUDLevelUpHelper
     {
         bonusAppearanceWeight = new Dictionary<int, float>()
         {
-            { 0, 19.5f },    // 0은 포함될 확률이 x%
-            { 1, 19.2f },    // 1은 포함될 확률이 y%
-            { 2, 17 },
+            { 0, 19.7f },    // 0은 포함될 확률이 x%
+            { 1, 19.5f },    // 1은 포함될 확률이 y%
+            { 2, 18 },
             { 3, 18 },
             { 4, 18.5f },
-            { 5, 0.5f },   // 관통
-            { 6, 0.8f },   // 투사체 증가 
-            { 7, 3f },   // 체력 자동 회복
+            { 5, 0.3f },   // 관통
+            { 6, 0.5f },   // 투사체 증가 
+            { 7, 2f },   // 체력 자동 회복
             { 8, 2f },   // 코인 확률
             { 9, 1.5f }    // 스페셜 타워
 
@@ -202,7 +202,7 @@ public class HUDLevelUpHelper
 
     public void BonusAttackSpeedUp()
     {
-        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackSpeedUp(0.98f));
+        ApplyBonus(() => GameManager.Instance.player.levelUpHelper.WeaponAttackSpeedUp(0.96f));
     }
 
     public void BonusRangeUp()
