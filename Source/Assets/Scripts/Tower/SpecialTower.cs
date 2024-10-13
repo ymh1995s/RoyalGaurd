@@ -13,10 +13,10 @@ public class SpecialTower : BaseTower
 
     protected override void Start()
     {
-        maxHP = 100;
+        maxHP = 150;
         base.Start();
 
-        fireRate = 1.3f;
+        fireRate = 1.15f;
         bulletSpeed = 10f;
 
         bulletPrefab = Resources.Load<GameObject>(prefabNames[3]);

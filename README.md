@@ -14,6 +14,7 @@
 ## 사용 기술
 1. C#
 2. Unity
+3. OOP 프로그래밍
 
 ## 결과
-만들래 [[10분 게임 콘테스트]](https://mandlemandle.com/project/randomknight/game) 출품 
+만들래 [[10분 게임 콘테스트]] "우수한 게임" (https://mandlemandle.com/project/randomknight/game) 등재

@@ -170,4 +170,9 @@ public class GameManager : MonoBehaviour
     {
         SceneLoader.SceneLoad_ClearScene();
     }
+
+    public void GameRestart()
+    {
+        SceneLoader.SceneLoad_StartScene();
+    }
 }

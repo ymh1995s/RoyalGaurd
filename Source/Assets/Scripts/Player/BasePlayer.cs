@@ -16,9 +16,6 @@ public class BasePlayer : MonoBehaviour, IBaseAllyUnit
     //하위 오브젝트의 애니메이터 (수출용)
     //private Animator animator;
 
-    // 코드 분산용 레밸업 헬퍼
-    public PlayerLevelUpHelper levelUpHelper;
-
     //스텟 영역
     public float moveSpeed = 2.0f;
     public int maxHP = 20;
@@ -51,6 +48,7 @@ public class BasePlayer : MonoBehaviour, IBaseAllyUnit
     //하위 스크립트
     ItemCollector itemcollector;
     Gatcha gatcha;
+    public PlayerLevelUpHelper levelUpHelper;
 
     // 사운드 영역
     AudioSource audio;
